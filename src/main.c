@@ -72,7 +72,8 @@ void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[], aut
 uint8_t calcScore(uint8_t towers[], uint8_t stack[], auton a, team t) {
 	uint8_t count = 0;
 
-	for (uint8_t i = 0; i < 3; i++) {
+	uint8_t i = 0;
+	for (i = 0; i < 3; i++) {
 		count += (towers[i] + 1) * stack[i];
 	}
 
@@ -85,8 +86,9 @@ uint8_t calcScore(uint8_t towers[], uint8_t stack[], auton a, team t) {
 void calcFuture(uint8_t future[2][3][3], uint8_t towers[], uint8_t stack[], auton a) {
 	uint8_t tempTower[3], tempAllianceStack[3];
 
-	for (uint8_t x = 0; h < 2; x++) {
-		for (uint8_t i = 0; i < 3; i++) {
+	uint8_t x, i;
+	for (x = 0; x < 2; x++) {
+		for (i = 0; i < 3; i++) {
 			memcpy(tempTower, towers, 3 * sizeof(uint8_t));
 			memcpy(tempAllianceStack, stack, 3 * sizeof(uint8_t));
 
