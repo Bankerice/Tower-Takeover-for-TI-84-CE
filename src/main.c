@@ -8,36 +8,55 @@
 */
 
 #include "main.h"
+#include "graphics.h"
 
 
 int main() {
 	// Defaults the auton winner to a tie
 	auton autonWinner = AUTON_TIE;
-
+	
+	teamColor teamCol = TEAM_COLOR_RED;
+	uint8_t i;
 	uint8_t towers[3], allianceS[3], enemyS[3];
 	uint8_t future[2][3][3];
+
+	const bool emptyArray[4];
+	bool toUpdate[4];
 
 	uint8_t allianceScore = 0, enemyScore = 0;
 
 	kb_SetMode(MODE_3_CONTINUOUS);
 
-	initializeGUI();
-
+	gfx_Begin();
+	initGUI();
 	do {
-		update(towers, allianceS, enemyS, autonWinner);
+		//memcpy(toUpdate, emptyArray, 32);
+		for (i = 0; i < 4; i++)
+		{
+			toUpdate[i] = 0;
+		}
+		
+		//while(!os_GetCSC);
+		update(towers, allianceS, enemyS, &autonWinner, toUpdate, &teamCol);
 
+		if(toUpdate[UPDATE_CALCULATIONS]){
 		allianceScore = calcScore(towers, allianceS, autonWinner, TEAM_ALLIANCE);
 		enemyScore = calcScore(towers, enemyS, autonWinner, TEAM_ENEMY);
 		calcFuture(future, towers, allianceS, autonWinner);
-
-		draw();
+		}
+		
+		draw(teamCol, toUpdate);
 	} while (kb_Data[1] != kb_Graph);
+	gfx_End();
 	return 0;
 }
 
 
-void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[], auton a) {
+void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
+			auton *a, bool updates[], teamColor *col) {
 	uint8_t num = 1;
+	uint8_t i = 0;
+	uint8_t oldTowers[3], oldAllianceStack[3], oldEnemyStack[3];
 
 	if (kb_Data[3] & kb_4)	num = 4;
 	else if (kb_Data[3] & kb_7)	num = 7;
@@ -47,6 +66,20 @@ void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[], aut
 	else if (kb_Data[5] & kb_3)	num = 3;
 	else if (kb_Data[5] & kb_6)	num = 6;
 	else if (kb_Data[5] & kb_9)	num = 9;
+
+
+	memcpy(oldTowers, towers, 3 * sizeof(uint8_t));
+	memcpy(oldAllianceStack, allianceStack, 3 * sizeof(uint8_t));
+	memcpy(oldEnemyStack, enemyStack, 3 * sizeof(uint8_t));
+
+	if (kb_Data[1] & kb_Yequ) {
+		updates[0] = true;
+		*col = *col == TEAM_COLOR_BLUE ? TEAM_COLOR_RED : TEAM_COLOR_BLUE;
+	}
+	else if (kb_Data[1] & kb_Trace) {
+		updates[1] = true;
+	}
+
 
 	if (kb_Data[1] & kb_2nd) towers[0] += num;
 	else if (kb_Data[2] & kb_Alpha)	towers[0] -= num;
@@ -66,6 +99,121 @@ void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[], aut
 	else if (kb_Data[6] & kb_Clear) enemyStack[0] -= num;
 	else if (kb_Data[6] & kb_Power) enemyStack[1] -= num;
 	else if (kb_Data[6] & kb_Div) enemyStack[2] -= num;
+
+	//There's probably a better way to do this, like a premade method, but I couldn't find one. Essentially checks if the if/else block above had anything true by comparing if any array was modified
+	for (i = 0; i < 3; i++)
+	{
+		if (towers[i] == oldTowers[i] || allianceStack[i] == oldAllianceStack[i] || enemyStack[i] == oldEnemyStack[i])
+		{
+			updates[2] = true;
+		}
+	}
+
+
+	switch (kb_Data[2])
+	{
+	case kb_Log:
+		*a = AUTON_WIN;
+		updates[3] = true;
+		break;
+	case kb_Ln:
+		*a = AUTON_LOSS;
+		updates[3] = true;
+		break;
+	case kb_Sto:
+		*a = AUTON_TIE;
+		updates[3] = true;
+		break;
+	}
+	/*
+	typedef struct {
+		bool key;
+		int8_t multiplier;
+		uint8_t * ptr;
+	} keyBind;
+
+	uint8_t inc = 1;
+	uint8_t oldTowers[3], oldAllianceStack[3], oldEnemyStack[3];
+
+	bool incrementors[10] = {
+						   false, false,
+						   kb_Key2,
+						   kb_Key3,
+						   kb_Key4,
+						   kb_Key5,
+						   kb_Key6,
+						   kb_Key7,
+						   kb_Key8,
+						   kb_Key9
+						   };
+
+	keyBind keys[18] = {
+			{kb_Key2nd, 1, towers},						// 2nd
+			{kb_KeyAlpha, -1, towers},					// Alpha
+			{kb_KeyMode, 1, (towers + 1)},				// Mode
+			{kb_KeyGraphVar, -1, (towers + 1)},			// X, T, Ѳ, n
+			{kb_KeyDel, 1, (towers + 2)},				// Del
+			{kb_KeyStat, -1, (towers + 2)},				// Stat
+			{kb_KeyMath, 1, allianceStack},				// Math
+			{kb_KeyRecip, 1, (allianceStack + 1)},		// Reciprocal
+			{kb_KeySquare, 1, (allianceStack + 2)},		// Square
+			{kb_KeyApps, -1, allianceStack},			// Apps
+			{kb_KeySin, -1, (allianceStack + 1)},		// Sin
+			{kb_KeyComma, -1, (allianceStack + 2)},		// Comma
+			{kb_KeyVars, 1, enemyStack},				// Vars
+			{kb_KeyTan, 1, (enemyStack + 1)},			// Tan
+			{kb_KeyRParen, 1, (enemyStack + 2)},		// RParen
+			{kb_KeyClear, -1, enemyStack},				// Clear
+			{kb_KeyPower, -1, (enemyStack + 1)},		// Power
+			{kb_KeyDiv, -1, (enemyStack + 2)}			// Divide
+	};
+
+	uint8_t incIter, keyIter, i;
+	for (incIter = 2; incIter <= 10; incIter++) {
+		if (kb_IsDown(incrementors[incIter])) {
+			inc = incIter;
+			break;
+		}
+	}
+	
+	memcpy(oldTowers, towers, 24);
+	memcpy(oldAllianceStack, allianceStack, 24);
+	memcpy(oldEnemyStack, enemyStack, 24);
+	
+	if(kb_Data[1] & kb_Yequ) {
+		updates[0] = true;
+		col = col == TEAM_COLOR_BLUE ? TEAM_COLOR_RED : TEAM_COLOR_BLUE;
+	} else if(kb_Data[1] & kb_Trace)
+		updates[1] = true;
+
+	for (keyIter = 0; keyIter <=18; keyIter++) {
+		if (kb_IsDown(keys[keyIter].key)) {
+			*keys[keyIter].ptr = *keys[keyIter].ptr + (inc * keys[keyIter].multiplier);
+		}
+	}
+	
+	for (i = 0; i < 3; i++) {
+		if (towers[i] == oldTowers[i] || allianceStack[i] == oldAllianceStack[i] || enemyStack[i] == oldEnemyStack[i])
+		{
+			updates[2] = true;
+		}
+	}
+
+	switch (kb_Data[2]) {
+	case kb_Log:
+		*a = AUTON_WIN;
+		updates[3] = true;
+		break;
+	case kb_Ln:
+		*a = AUTON_LOSS;
+		updates[3] = true;
+		break;
+	case kb_Sto:
+		*a = AUTON_TIE;
+		updates[3] = true;
+		break;
+	}
+	*/
 }
 
 
@@ -102,13 +250,4 @@ void calcFuture(uint8_t future[2][3][3], uint8_t towers[], uint8_t stack[], auto
 			future[x][i][2] = calcScore(tempTower, tempAllianceStack, a, x);
 		}
 	}
-}
-
-
-void draw(void) {
-
-}
-
-void initializeGUI(void) {
-
 }
