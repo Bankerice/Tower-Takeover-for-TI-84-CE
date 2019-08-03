@@ -1,0 +1,52 @@
+opened convpng.ini
+
+--- symbols_gfx (C) ---
+building palette with [256] available indices ...
+built palette with [134] indices.
+palette quality : 100.00%
+transparent color index : 0
+transparent color : 0xFFFF
+39:
+ autonA : 100.00%
+ autonASelected : 100.00%
+ autonE : 100.00%
+ autonESelected : 100.00%
+ autonT : 100.00%
+ autonTSelected : 100.00%
+ blueAuton : 100.00%
+ blueTeamTextBox : 100.00%
+ bottomPanel : 100.00%
+ deltaTextBox : 100.00%
+ deltaXText : 100.00%
+ emptyTower : 100.00%
+ genericAuton : 100.00%
+ genericCube : 100.00%
+ genericTeamColor : 100.00%
+ greenAuton : 100.00%
+ greenCube : 100.00%
+ greenTextBox : 100.00%
+ greenTextBoxLong : 100.00%
+ neutralTeamBox : 100.00%
+ orangeCube : 100.00%
+ orangeTextBox : 100.00%
+ orangeTextBoxLong : 100.00%
+ plusMinusZero : 100.00%
+ purpleCube : 100.00%
+ purpleTextBox : 100.00%
+ purpleTextBoxLong : 100.00%
+ recommendationScore : 100.00%
+ redAuton : 100.00%
+ redTeamTextBox : 100.00%
+ redTextBox : 100.00%
+ scoreTextBox : 100.00%
+ shortGreenTextBox : 100.00%
+ shortOrangeTextBox : 100.00%
+ shortPurpleTextBox : 100.00%
+ shortRedTextBox : 100.00%
+ stackedCube : 100.00%
+ towerAdd : 100.00%
+ towerRemove : 100.00%
+
+converted in 0 s
+
+finished!
