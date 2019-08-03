@@ -55,8 +55,7 @@ int main() {
 void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 			auton *a, bool updates[], teamColor *col) {
 	
-	auton autonAssigner[] = {
-		0,
+	auton autonAssigner[3] = {
 		AUTON_TIE,
 		AUTON_LOSS,
 		AUTON_WIN
@@ -81,7 +80,7 @@ void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 
 	if (kb_Data[1] & kb_Yequ) {
 		updates[UPDATE_TEAM_COLORS] = true;
-		*col = *col == TEAM_COLOR_BLUE ? TEAM_COLOR_RED : TEAM_COLOR_BLUE;
+		*col = !*col;
 	}
 	else if (kb_Data[1] & kb_Trace)
 		updates[UPDATE_RESET_BUTTON] = true;
@@ -113,7 +112,7 @@ void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 	kbd2h = kb_Data[2] / 2;
 	if (kb_Data[2] && kb_Data[2] < 16) {
 		updates[UPDATE_AUTON] = true;
-		*a = autonAssigner[(int)(0.5*pow(kbd2h, 2) - 0.5*kbd2h + 1)];
+		*a = autonAssigner[(int)(0.5*kbd2h*kbd2h - 0.5*kbd2h)];
 	}
 }
 
