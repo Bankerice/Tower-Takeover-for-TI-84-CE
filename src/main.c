@@ -54,13 +54,6 @@ int main() {
 
 void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 			auton *a, bool updates[], teamColor *col) {
-	
-	auton autonAssigner[3] = {
-		AUTON_TIE,
-		AUTON_LOSS,
-		AUTON_WIN
-	};
-	uint8_t kbd2h; //kb_Data[2] halved
 	uint8_t inc = 1;
 	uint8_t oldTowers[3], oldAllianceStack[3], oldEnemyStack[3];
 
@@ -109,11 +102,20 @@ void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 		memcmp(enemyStack, oldEnemyStack, sizeof(enemyStack)))
 					updates[UPDATE_CALCULATIONS] = true;
 
-	kbd2h = kb_Data[2] / 2;
-	if (kb_Data[2] && kb_Data[2] < 16) {
-		updates[UPDATE_AUTON] = true;
-		*a = autonAssigner[(int)(0.5*kbd2h*kbd2h - 0.5*kbd2h)];
-	}
+	switch (kb_Data[2])
+	{
+	case kb_Log:
+		*a = AUTON_WIN;
+		updates[3] = true;
+		break;
+	case kb_Ln:
+		*a = AUTON_LOSS;
+		updates[3] = true;
+		break;
+	case kb_Sto:
+		*a = AUTON_TIE;
+		updates[3] = true;
+		break;
 }
 
 
