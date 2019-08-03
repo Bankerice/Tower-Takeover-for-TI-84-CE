@@ -116,6 +116,7 @@ void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 		*a = AUTON_TIE;
 		updates[3] = true;
 		break;
+	}
 }
 
 
