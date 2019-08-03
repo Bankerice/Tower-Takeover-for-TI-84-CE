@@ -48,6 +48,12 @@ typedef enum {
     TEAM_COLOR_BLUE
 } teamColor;
 
+typedef struct {
+    kb_key_t key;
+    int8_t multiplier;
+    uint8_t * ptr;
+} updateKeyBind;
+
 void copy(uint8_t original[], uint8_t copy[], uint8_t indexes);
 void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[], auton *a, bool updates[], teamColor *col);
 uint8_t calcScore(uint8_t towers[], uint8_t stack[], auton a, team t);
