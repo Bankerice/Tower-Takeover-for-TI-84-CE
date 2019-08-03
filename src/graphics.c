@@ -16,7 +16,6 @@ void initGUI(void) {
             uint8_t i = 0;
             uint8_t j = 0;
             /* Initialize the 8bpp graphics */;
-            gfx_FillScreen(0);
             gfx_SetPalette(symbols_gfx_pal, sizeof_symbols_gfx_pal, 0);
 
             //Fill the screen white
@@ -27,7 +26,6 @@ void initGUI(void) {
             gfx_Rectangle_NoClip(0,0,165,224);
             gfx_Rectangle_NoClip(1,1,163,222);
             for (i = 0; i < 16; i++) //Makes all horizontal lines
-            {
                 switch (i)
                 {
                 case 0: case 3: case 6: case 7: case 10: case 13:
@@ -40,7 +38,7 @@ void initGUI(void) {
                     break;
                 }
 
-            }
+    
             gfx_VertLine_NoClip(39,2,220);
             gfx_VertLine_NoClip(40,2,220);
             gfx_VertLine_NoClip(86,2,51);
@@ -68,7 +66,6 @@ void initGUI(void) {
             gfx_TransparentSprite_NoClip(purpleTextBoxLong, 41, 81);
             //The red text boxes, along with the other 27 orange/green/purple boxes
             for (i = 0; i < 10; i++)
-            {
                 switch (i)
                 {
                 case 1: case 4: case 7:
@@ -92,7 +89,7 @@ void initGUI(void) {
                     gfx_TransparentSprite_NoClip(shortRedTextBox, 135, 94);
                     break;   
                 }
-            }
+    
             
             //Gray box
             gfx_SetColor(gray);
@@ -106,29 +103,18 @@ void initGUI(void) {
             printStringCentered("Enemy",88,2,132,13,gfx_GetStringWidth("Enemy"),FONT_HEIGHT);
             gfx_TransparentSprite_NoClip(deltaXText,141,4);
             for (i = 0; i < 2; i++)
-            {
                 for (j = 0; j < 10; j++)
-                {
                     printStringCentered("000",41+47*i,94+13*j,85+47*i,104+13*j,gfx_GetStringWidth("000"),FONT_HEIGHT);
-                }
-                
-            }
+
             for (i = 0; i < 2; i++)
-            {
                 for (j = 0; j < 3; j++)
-                {
                     printStringCentered("00",41+47*i,16+13*j,85+47*i,26+13*j,gfx_GetStringWidth("00"),FONT_HEIGHT);
-                }
                 
-            }
             for (i = 0; i < 3; i++)
-            {
                    printStringCentered("0",41,55+13*i,132,65+13*i,gfx_GetStringWidth("0"),FONT_HEIGHT);             
-            }
+            
             for (i = 0; i < 10; i++)
-            {
                 spriteCentered(plusMinusZero, 135, 94+i*13,162,104+i*13,plusMinusZero_width,plusMinusZero_height);
-            }
 
             //Side symbols
             gfx_TransparentSprite_NoClip(genericCube, 2, 16);
@@ -139,9 +125,7 @@ void initGUI(void) {
 
             //Bottom panels
             for (i = 0; i < 5; i++)
-            {
                 gfx_TransparentSprite_NoClip(bottomPanel, 64*i, 224);
-            }
             gfx_TransparentSprite_NoClip(genericTeamColor,12,227);
             printStringCentered("Reset",194,226,253,237,gfx_GetStringWidth("Reset"),FONT_HEIGHT);
             gfx_PrintStringXY("Quit",275,228); //This really should be "printStringCentered" but for some reason this had some issues
@@ -171,11 +155,9 @@ void initGUI(void) {
                 gfx_TransparentSprite_NoClip(recommendationScore,177+47*i,133);
                 gfx_TransparentSprite_NoClip(plusMinusZero,184+47*i,135);//This really should be "printStringCentered" but for some reason this had some issues
             }
-            gfx_SetColor(gold); gfx_FillRectangle_NoClip(177,94,37,37);
-            gfx_SetColor(silver); gfx_FillRectangle_NoClip(224,94,37,37);
-            gfx_SetColor(bronze); gfx_FillRectangle_NoClip(271,94,37,37);
-            
-
+            gfx_SetColor(gold);     gfx_FillRectangle_NoClip(177,94,37,37);
+            gfx_SetColor(silver);   gfx_FillRectangle_NoClip(224,94,37,37);
+            gfx_SetColor(bronze);   gfx_FillRectangle_NoClip(271,94,37,37);
         }
 
 
@@ -193,19 +175,15 @@ void debugPrintPalette(void) {
     uint8_t i;
     uint8_t j;
             for (i = 0; i < 8; i++)
-            {
                 for (j = 0; j < 32; j++)
                 {
                     gfx_SetColor(i*32+j);
                     gfx_SetPixel(5+j,5+i);
                 }
-                
-            }
 }
 
 
 void draw(teamColor col, bool updates[]) {
-	//gfx_SetPalette(symbols_gfx_pal, sizeof_symbols_gfx_pal, 0);
 	if (updates[UPDATE_TEAM_COLORS])
 	{
 		col = col == TEAM_COLOR_BLUE ? TEAM_COLOR_RED : TEAM_COLOR_BLUE;

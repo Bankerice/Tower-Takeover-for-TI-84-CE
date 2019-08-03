@@ -18,9 +18,8 @@ int main() {
 	teamColor teamCol = TEAM_COLOR_RED;
 	uint8_t i;
 	uint8_t towers[3], allianceS[3], enemyS[3];
-	uint8_t future[2][3][3];
+	uint8_t future[2][3][3]; ///ally/enemy | color | actions
 
-	const bool emptyArray[4];
 	bool toUpdate[4];
 
 	uint8_t allianceScore = 0, enemyScore = 0;
@@ -30,14 +29,13 @@ int main() {
 	gfx_Begin();
 	initGUI();
 	do {
-		//memcpy(toUpdate, emptyArray, 32);
 		for (i = 0; i < 4; i++)
 			toUpdate[i] = 0;
 		
 		//while(!os_GetCSC);
 		update(towers, allianceS, enemyS, &autonWinner, toUpdate, &teamCol);
 
-		if(toUpdate[UPDATE_CALCULATIONS]){
+		if (toUpdate[UPDATE_CALCULATIONS]) {
 		allianceScore = calcScore(towers, allianceS, autonWinner, TEAM_ALLIANCE);
 		enemyScore = calcScore(towers, enemyS, autonWinner, TEAM_ENEMY);
 		calcFuture(future, towers, allianceS, autonWinner);
@@ -106,15 +104,15 @@ void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 	{
 	case kb_Log:
 		*a = AUTON_WIN;
-		updates[3] = true;
+		updates[UPDATE_AUTON] = true;
 		break;
 	case kb_Ln:
 		*a = AUTON_LOSS;
-		updates[3] = true;
+		updates[UPDATE_AUTON] = true;
 		break;
 	case kb_Sto:
 		*a = AUTON_TIE;
-		updates[3] = true;
+		updates[UPDATE_AUTON] = true;
 		break;
 	}
 }
@@ -124,13 +122,10 @@ uint8_t calcScore(uint8_t towers[], uint8_t stack[], auton a, team t) {
 	uint8_t count = 0;
 
 	uint8_t i = 0;
-	for (i = 0; i < 3; i++) {
+	for (i = 0; i < 3; i++) 
 		count += (towers[i] + 1) * stack[i];
-	}
 
 	count += (a == t ? 6 : a == AUTON_TIE ? 3 : 0);
-	// count += (t == TEAM_ALLIANCE ? 1 : -1) * (-4.5 * pow(a, 2) + 7.5 * a) + 3;
-
 	return count;
 }
 
@@ -144,13 +139,13 @@ void calcFuture(uint8_t future[2][3][3], uint8_t towers[], uint8_t stack[], auto
 			memcpy(tempAllianceStack, stack, 3 * sizeof(uint8_t));
 
 			tempTower[i] += 1;
-			future[x][i][0] = calcScore(tempTower, tempAllianceStack, a, x);
+			future[x][i][TOWER_ADD] = calcScore(tempTower, tempAllianceStack, a, x);
 
 			tempTower[i] -= 2;
-			future[x][i][1] = calcScore(tempTower, tempAllianceStack, a, x);
+			future[x][i][TOWER_REMOVE] = calcScore(tempTower, tempAllianceStack, a, x);
 
 			tempAllianceStack[i] += 1;
-			future[x][i][2] = calcScore(tempTower, tempAllianceStack, a, x);
+			future[x][i][CUBE_STACK] = calcScore(tempTower, tempAllianceStack, a, x);
 		}
 	}
 }
