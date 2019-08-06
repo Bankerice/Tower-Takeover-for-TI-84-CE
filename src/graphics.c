@@ -182,23 +182,39 @@ void debugPrintPalette(void) {
 		}
 }
 
+void draw(auton *autonWinner, teamColor *col, uint8_t towers[], uint8_t allianceS[], uint8_t enemyS[], uint8_t future[2][3][3], bool updates[]) {
+	uint8_t i;
 
-void draw(teamColor col, bool updates[]) {
+	//kinda lazy on these, whatever
+	uint8_t empty3Array[3];
+	uint8_t empty233Array[2][3][3];
+
 	if (updates[UPDATE_TEAM_COLORS])
 	{
-		col = col == TEAM_COLOR_BLUE ? TEAM_COLOR_RED : TEAM_COLOR_BLUE;
-		if (col == TEAM_COLOR_BLUE)
+		if (*col == TEAM_COLOR_BLUE)
 		{
 			gfx_TransparentSprite_NoClip(blueTeamTextBox, 41, 2);
 			gfx_TransparentSprite_NoClip(redTeamTextBox, 88, 2);
+			gfx_SetColor(lightBlue);
 		}
 		else {
 			gfx_TransparentSprite_NoClip(redTeamTextBox, 41, 2);
 			gfx_TransparentSprite_NoClip(blueTeamTextBox, 88, 2);
+			gfx_SetColor(lightRed);
 		}
 		printStringCentered("Ally", 41, 2, 85, 13, gfx_GetStringWidth("Ally"), FONT_HEIGHT);
 		printStringCentered("Enemy", 88, 2, 132, 13, gfx_GetStringWidth("Enemy"), FONT_HEIGHT);
+		gfx_FillRectangle_NoClip(15, 230, 28, 223);
+	} else if (updates[UPDATE_RESET_BUTTON]) { //toUpdate, allianceScore, and enemyScore will reset on their own
+		*autonWinner = AUTON_TIE;
+		*col = TEAM_COLOR_RED;
 
+		memcpy(towers, empty3Array, 3 * sizeof(uint8_t));
+		memcpy(allianceS, empty3Array, 3 * sizeof(uint8_t));
+		memcpy(enemyS, empty3Array, 3 * sizeof(uint8_t));
+		memcpy(future, empty233Array, 12 * sizeof(uint8_t));
+
+		initGUI();
 	}
 
 }

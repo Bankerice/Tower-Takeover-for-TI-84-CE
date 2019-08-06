@@ -19,17 +19,12 @@ int main() {
 	auton autonWinner = AUTON_TIE;
 
 	teamColor teamCol = TEAM_COLOR_RED;
-	uint8_t i;
-	uint8_t count=0;
 	uint8_t towers[3], allianceS[3], enemyS[3];
 	uint8_t future[2][3][3]; ///ally/enemy | color | actions
 
-	char debug[4];
-
 	bool toUpdate[4];
-	bool oldUpdate[4];
 	uint8_t allianceScore = 0, enemyScore = 0;
-	bool key = false, prevkey = false;
+
 	gfx_Begin();
 	initGUI();
 
@@ -38,20 +33,20 @@ int main() {
 
 	do {
 
+		while (kb_AnyKey()); //Stops for a button hold
+		while (!kb_AnyKey()); //Stops for a key press
+
 		kb_Scan();
 
-		if (kb_AnyKey()) {
-			update(towers, allianceS, enemyS, &autonWinner, toUpdate, &teamCol);
+		update(towers, allianceS, enemyS, &autonWinner, toUpdate, &teamCol);
 
-			if (toUpdate[UPDATE_CALCULATIONS]) {
-				allianceScore = calcScore(towers, allianceS, autonWinner, TEAM_ALLIANCE);
-				enemyScore = calcScore(towers, enemyS, autonWinner, TEAM_ENEMY);
-				calcFuture(future, towers, allianceS, autonWinner);
-			}
-
-			draw(teamCol, toUpdate);
-			while (kb_AnyKey());
+		if (toUpdate[UPDATE_CALCULATIONS]) {
+			allianceScore = calcScore(towers, allianceS, autonWinner, TEAM_ALLIANCE);
+			enemyScore = calcScore(towers, enemyS, autonWinner, TEAM_ENEMY);
+			calcFuture(future, towers, allianceS, autonWinner);
 		}
+
+		draw(&autonWinner, &teamCol, towers, allianceS, enemyS, future, toUpdate);
 	} while (kb_Data[1] != kb_Graph);
 
 	gfx_End();
@@ -90,6 +85,7 @@ void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 	}
 	else if (kb_Data[1] & kb_Trace)
 		updates[UPDATE_RESET_BUTTON] = true;
+	//NOTE: The quit button is incorporated in the main loop
 
 	for (i = 0; i < 3; i++)
 	{
