@@ -195,16 +195,25 @@ void draw(auton *autonWinner, teamColor *col, uint8_t towers[], uint8_t alliance
 		{
 			gfx_TransparentSprite_NoClip(blueTeamTextBox, 41, 2);
 			gfx_TransparentSprite_NoClip(redTeamTextBox, 88, 2);
+			gfx_TransparentSprite_NoClip(blueAuton, 170, 4);
+			gfx_TransparentSprite_NoClip(redAuton, 185, 4);
 			gfx_SetColor(BLUE);
 		}
 		else {
 			gfx_TransparentSprite_NoClip(redTeamTextBox, 41, 2);
 			gfx_TransparentSprite_NoClip(blueTeamTextBox, 88, 2);
+			gfx_TransparentSprite_NoClip(redAuton, 170, 4);
+			gfx_TransparentSprite_NoClip(blueAuton, 185, 4);
 			gfx_SetColor(RED);
 		}
 		printStringCentered("Ally", 41, 2, 85, 13, gfx_GetStringWidth("Ally"), FONT_HEIGHT);
 		printStringCentered("Enemy", 88, 2, 132, 13, gfx_GetStringWidth("Enemy"), FONT_HEIGHT);
 		gfx_FillRectangle_NoClip(15, 230, 34, 4);
+
+		//TODO: Technically, this is inefficient because this is repeated in update auton, but doesn't work without this
+		gfx_TransparentSprite_NoClip(autonA, 172, 6);
+		gfx_TransparentSprite_NoClip(autonE, 187, 6);
+		updates[UPDATE_AUTON] = true;
 	} else if (updates[UPDATE_RESET_BUTTON]) { //toUpdate, allianceScore, and enemyScore will reset on their own
 		*autonWinner = AUTON_TIE;
 		*col = TEAM_COLOR_RED;
@@ -215,6 +224,37 @@ void draw(auton *autonWinner, teamColor *col, uint8_t towers[], uint8_t alliance
 		memcpy(future, empty233Array, 12 * sizeof(uint8_t));
 
 		initGUI();
+	} else if (updates[UPDATE_CALCULATIONS]) {
+		//TODO
+	} else if (updates[UPDATE_AUTON]) {
+		gfx_SetColor(1);//Reset outer boxes
+		gfx_Rectangle_NoClip(168, 2, 14, 15);
+		gfx_Rectangle_NoClip(169, 3, 12, 13);
+		gfx_Rectangle_NoClip(183, 2, 14, 15);
+		gfx_Rectangle_NoClip(184, 3, 12, 13);
+		gfx_Rectangle_NoClip(176, 18, 14, 15);
+		gfx_Rectangle_NoClip(177, 19, 12, 13);
+		gfx_TransparentSprite_NoClip(autonA, 172, 6);
+		gfx_TransparentSprite_NoClip(autonE, 187, 6);
+		gfx_TransparentSprite_NoClip(autonT, 180, 22);
+		gfx_SetColor(PURPLE);
+		switch (*autonWinner)
+		{
+		case AUTON_TIE:
+			gfx_Rectangle_NoClip(176, 18, 14, 15);
+			gfx_Rectangle_NoClip(177, 19, 12, 13);
+			gfx_TransparentSprite_NoClip(autonTSelected, 180, 22);
+			break;
+		case AUTON_WIN:
+			gfx_Rectangle_NoClip(168, 2, 14, 15);
+			gfx_Rectangle_NoClip(169, 3, 12, 13);
+			gfx_TransparentSprite_NoClip(autonASelected, 172, 6);
+			break;
+		case AUTON_LOSS:
+			gfx_Rectangle_NoClip(183, 2, 14, 15);
+			gfx_Rectangle_NoClip(184, 3, 12, 13);
+			gfx_TransparentSprite_NoClip(autonESelected, 187, 6);
+			break;	
+		}
 	}
-
 }
