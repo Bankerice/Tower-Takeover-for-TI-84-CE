@@ -195,16 +195,16 @@ void draw(auton *autonWinner, teamColor *col, uint8_t towers[], uint8_t alliance
 		{
 			gfx_TransparentSprite_NoClip(blueTeamTextBox, 41, 2);
 			gfx_TransparentSprite_NoClip(redTeamTextBox, 88, 2);
-			gfx_SetColor(lightBlue);
+			gfx_SetColor(BLUE);
 		}
 		else {
 			gfx_TransparentSprite_NoClip(redTeamTextBox, 41, 2);
 			gfx_TransparentSprite_NoClip(blueTeamTextBox, 88, 2);
-			gfx_SetColor(lightRed);
+			gfx_SetColor(RED);
 		}
 		printStringCentered("Ally", 41, 2, 85, 13, gfx_GetStringWidth("Ally"), FONT_HEIGHT);
 		printStringCentered("Enemy", 88, 2, 132, 13, gfx_GetStringWidth("Enemy"), FONT_HEIGHT);
-		gfx_FillRectangle_NoClip(15, 230, 28, 223);
+		gfx_FillRectangle_NoClip(15, 230, 34, 4);
 	} else if (updates[UPDATE_RESET_BUTTON]) { //toUpdate, allianceScore, and enemyScore will reset on their own
 		*autonWinner = AUTON_TIE;
 		*col = TEAM_COLOR_RED;
