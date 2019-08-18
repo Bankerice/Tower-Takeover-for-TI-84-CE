@@ -1,0 +1,120 @@
+Segment  Base   Top    High   Length
+-------- ------ ------ ------ -------
+icon     D1A882 D1A9B7           135h
+launcher D1A9B7 D1AA0F            58h
+libs     D1AA0F D1AA70            61h
+startup  D1AA70 D1AAAF            3Fh
+cleanup  D1AAAF D1AAC3            14h
+exit     D1AAC3 D1AAC9             6h
+code     D1AAC9 D1DDFB          3332h
+data     D1DDFB D2462C          6831h
+strsect  D2462C D246D7            ABh
+text     D246D7 D246E0             9h
+bss      D031F6 D031F6 D13FD6      0h
+header   D1A87F D1A882             3h
+
+Label                           Value
+-----------------------------   ------
+_os_DisableHomeTextBuffer     = D1AAC9
+_os_EnableHomeTextBuffer      = D1AADB
+__seqcase                     = 000210
+__case24                      = 00011C
+__case8                       = 000124
+__frameset                    = D1AAED
+_sprintf                      = 0000BC
+__imul_b                      = 000158
+__imul_b                      = 000150
+__bshl                        = 000100
+__irems                       = 00016C
+__stoiu                       = 000264
+_memcpy                       = 0000A4
+__ildix                       = 000148
+_memcmp                       = 0000A0
+__istix                       = 00018C
+__idivs                       = 00013C
+__icmpzero                    = 000138
+_abs                          = D1AAFB
+__smulu                       = 000228
+__setflag                     = 000218
+__findlibload                 = D1A9B7
+__program_icon                = D1A887
+__program_description         = D1A989
+__ccleanup                    = D1AAAF
+_errno                        = D008DC
+_init                         = D1A882
+_exit                         = D1AAC5
+__exit                        = D1AA9E
+__exitsp                      = D1AA9E
+__errsp                       = D1AA9E
+_autonA_data                  = D1DE1D
+_autonASelected_data          = D1DE49
+_autonE_data                  = D1DE75
+_autonESelected_data          = D1DEA1
+_autonT_data                  = D1DECD
+_autonTSelected_data          = D1DEF9
+_blueAuton_data               = D1DF25
+_blueTeamTextBox_data         = D1DF95
+_bottomPanel_data             = D1E1B3
+_deltaTextBox_data            = D1E5B5
+_deltaXText_data              = D1E707
+_emptyTower_data              = D1E772
+_genericAuton_data            = D1ECCD
+_genericCube_data             = D1ED3D
+_genericTeamColor_data        = D1F298
+_greenAuton_data              = D1F42A
+_greenCube_data               = D1F49A
+_greenTextBox_data            = D1F9F5
+_greenTextBoxLong_data        = D1FBE6
+_neutralTeamBox_data          = D1FFDC
+_orangeCube_data              = D201FA
+_orangeTextBox_data           = D20755
+_orangeTextBoxLong_data       = D20946
+_plusMinusZero_data           = D20D3C
+_purpleCube_data              = D20DD8
+_purpleTextBox_data           = D21333
+_purpleTextBoxLong_data       = D21524
+_recommendationScore_data     = D2191A
+_redAuton_data                = D21AB3
+_redTeamTextBox_data          = D21B23
+_redTextBox_data              = D21D41
+_shortGreenTextBox_data       = D21F32
+_shortOrangeTextBox_data      = D22068
+_shortPurpleTextBox_data      = D2219E
+_shortRedTextBox_data         = D222D4
+_stackedCube_data             = D2240A
+_symbols_gfx_pal              = D22965
+_towerAdd_data                = D22B65
+_towerGreen_data              = D230C0
+_towerOrange_data             = D2361B
+_towerPurple_data             = D23B76
+_towerRemove_data             = D240D1
+_valid                        = D1CFB4
+_draw                         = D1B86F
+_debugPrintPalette            = D1B810
+_spriteCentered               = D1B786
+_printStringCentered          = D1B6FA
+_initGUI                      = D1ABF5
+_selectionSort                = D1AB60
+_swap                         = D1AB3D
+_indexOf                      = D1AB07
+_calcFuture                   = D1DBD6
+_calcScore                    = D1DB56
+_update                       = D1D1CF
+_main                         = D1D0B8
+_gfx_Begin                    = D1AA22
+_gfx_End                      = D1AA26
+_gfx_SetColor                 = D1AA2A
+_gfx_SetPalette               = D1AA2E
+_gfx_FillScreen               = D1AA32
+_gfx_SetPixel                 = D1AA36
+_gfx_PrintStringXY            = D1AA3A
+_gfx_SetTextFGColor           = D1AA3E
+_gfx_GetStringWidth           = D1AA42
+_gfx_HorizLine_NoClip         = D1AA46
+_gfx_VertLine_NoClip          = D1AA4A
+_gfx_Rectangle_NoClip         = D1AA4E
+_gfx_FillRectangle_NoClip     = D1AA52
+_gfx_TransparentSprite_NoClip = D1AA56
+_gfx_SetTransparentColor      = D1AA5A
+_kb_Scan                      = D1AA68
+_kb_AnyKey                    = D1AA6C

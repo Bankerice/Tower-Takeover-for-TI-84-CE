@@ -1,0 +1,59 @@
+; Zilog eZ80 ANSI C Compiler Release 3.4
+; -optsize -noreduceopt -nomodsect -peephole -globalopt
+; -localcse -const=ROM 
+	FILE	"SRC\GFX\AUTONASELECTED.C"
+	.assume ADL=1
+	SEGMENT DATA
+_autonASelected_data:
+	DB	6
+	DB	7
+	DB	248
+	DB	248
+	DB	20
+	DB	20
+	DB	248
+	DB	248
+	DB	248
+	DB	20
+	DB	20
+	DB	20
+	DB	20
+	DB	248
+	DB	20
+	DB	20
+	DB	248
+	DB	248
+	DB	20
+	DB	20
+	DB	20
+	DB	20
+	DB	248
+	DB	248
+	DB	20
+	DB	20
+	DB	20
+	DB	20
+	DB	20
+	DB	20
+	DB	20
+	DB	20
+	DB	20
+	DB	20
+	DB	248
+	DB	248
+	DB	20
+	DB	20
+	DB	20
+	DB	20
+	DB	248
+	DB	248
+	DB	20
+	DB	20
+	XDEF _autonASelected_data
+;    1	// convpng v7.1
+;    2	#include <stdint.h>
+;    3	#include "symbols_gfx.h"
+;    4	
+;    5	// 8 bpp image
+;    6	uint8_t autonASelected_data[44] = {
+	END

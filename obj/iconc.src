@@ -1,0 +1,30 @@
+ .def __program_icon
+ .def __program_description
+
+ .assume adl=1
+ segment .icon
+
+ jp __program_description_end
+ db 1
+__program_icon:
+ db 16,16
+ db 0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
+ db 0FFh,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,0FFh
+ db 0FFh,000h,08Ch,08Ch,0E8h,0E8h,08Ch,08Ch,06Bh,06Bh,034h,034h,06Bh,06Bh,000h,0FFh
+ db 0FFh,000h,08Ch,08Ch,0E8h,0E8h,08Ch,08Ch,06Bh,06Bh,034h,034h,06Bh,06Bh,000h,0FFh
+ db 0FFh,000h,0E8h,0E8h,08Ch,08Ch,06Bh,06Bh,08Ch,08Ch,06Bh,06Bh,034h,034h,000h,0FFh
+ db 0FFh,000h,0E8h,0E8h,08Ch,08Ch,06Bh,06Bh,08Ch,08Ch,06Bh,06Bh,034h,034h,000h,0FFh
+ db 0FFh,000h,08Ch,08Ch,06Bh,06Bh,08Ch,08Ch,06Bh,06Bh,08Ch,08Ch,06Bh,06Bh,000h,0FFh
+ db 0FFh,000h,08Ch,0E3h,0E3h,06Bh,08Ch,071h,071h,06Bh,08Ch,024h,024h,06Bh,000h,0FFh
+ db 0FFh,000h,06Bh,0E3h,0E3h,08Ch,06Bh,071h,071h,08Ch,06Bh,024h,024h,08Ch,000h,0FFh
+ db 0FFh,000h,06Bh,06Bh,08Ch,08Ch,06Bh,06Bh,08Ch,08Ch,06Bh,06Bh,08Ch,08Ch,000h,0FFh
+ db 0FFh,000h,08Ch,08Ch,06Bh,06Bh,08Ch,08Ch,06Bh,06Bh,08Ch,08Ch,06Bh,06Bh,000h,0FFh
+ db 0FFh,000h,08Ch,08Ch,06Bh,06Bh,08Ch,08Ch,06Bh,06Bh,08Ch,08Ch,06Bh,06Bh,000h,0FFh
+ db 0FFh,000h,0E8h,0E8h,08Ch,08Ch,06Bh,06Bh,08Ch,08Ch,06Bh,06Bh,034h,034h,000h,0FFh
+ db 0FFh,000h,0E8h,0E8h,08Ch,08Ch,06Bh,06Bh,08Ch,08Ch,06Bh,06Bh,034h,034h,000h,0FFh
+ db 0FFh,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,000h,0FFh
+ db 0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh,0FFh
+
+__program_description:
+ db "Calculator for Tower Takeover by Vex Robotics",0
+__program_description_end:

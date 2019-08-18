@@ -1,0 +1,59 @@
+; Zilog eZ80 ANSI C Compiler Release 3.4
+; -optsize -noreduceopt -nomodsect -peephole -globalopt
+; -localcse -const=ROM 
+	FILE	"SRC\GFX\AUTONE.C"
+	.assume ADL=1
+	SEGMENT DATA
+_autonE_data:
+	DB	6
+	DB	7
+	DB	1
+	DB	1
+	DB	1
+	DB	1
+	DB	1
+	DB	1
+	DB	1
+	DB	1
+	DB	248
+	DB	248
+	DB	248
+	DB	248
+	DB	1
+	DB	1
+	DB	248
+	DB	248
+	DB	248
+	DB	248
+	DB	1
+	DB	1
+	DB	1
+	DB	1
+	DB	1
+	DB	248
+	DB	1
+	DB	1
+	DB	248
+	DB	248
+	DB	248
+	DB	248
+	DB	1
+	DB	1
+	DB	248
+	DB	248
+	DB	248
+	DB	248
+	DB	1
+	DB	1
+	DB	1
+	DB	1
+	DB	1
+	DB	1
+	XDEF _autonE_data
+;    1	// convpng v7.1
+;    2	#include <stdint.h>
+;    3	#include "symbols_gfx.h"
+;    4	
+;    5	// 8 bpp image
+;    6	uint8_t autonE_data[44] = {
+	END
