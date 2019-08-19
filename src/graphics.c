@@ -8,7 +8,6 @@
 */
 
 #include "graphics.h"
-#include <debug.h>
 
 #define FONT_HEIGHT 8
 
@@ -349,10 +348,9 @@ void draw(auton autonWinner, teamColor col, uint8_t towers[], uint8_t allianceS[
 
 		memcpy(sortedDiffs, diffs, 10*sizeof(int8_t));
 
-		selectionSort(sortedDiffs, 10);
+		qsort(sortedDiffs, 10, sizeof(int8_t), compare);
 
-		for (i = 0; i < 3; i++)
-		{
+		for (i = 0; i < 3; i++) {
 			j = sortedDiffs[9-i];
 			x = 47*i;
 
@@ -495,38 +493,3 @@ void valid(bool validPrints[2][3][3], uint8_t towers[], uint8_t allianceS[], uin
 			validPrints[i][j][TOWER_REMOVE] = !(towers[j] == 0);
 		}
 }
-
-
-int8_t indexOf(int8_t arr[], int8_t val, uint8_t indices) {
-	uint8_t i;
-	for (i = 0; i < indices; i++)
-		if (arr[i] == val) {
-			//arr[i] = -127;
-			return i;
-		}
-	return -1;
-}
-
-
-void swap(int8_t *xp, int8_t *yp) { 
-    int8_t temp = *xp; 
-    *xp = *yp; 
-    *yp = temp; 
-} 
-
-void selectionSort(int8_t arr[], uint8_t n) { 
-    uint8_t i, j, min_idx; 
-
-     // One by one move boundary of unsorted subarray 
-    for (i = 0; i < n-1; i++) 
-    { 
-        // Find the minimum element in unsorted array 
-        min_idx = i; 
-        for (j = i+1; j < n; j++) 
-          if (arr[j] < arr[min_idx]) 
-            min_idx = j; 
-
-         // Swap the found minimum element with the first element 
-        swap(&arr[min_idx], &arr[i]); 
-    } 
-} 

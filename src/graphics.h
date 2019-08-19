@@ -5,6 +5,7 @@
 
 #include "gfx/symbols_gfx.h"
 #include "main.h"
+#include "utils.h"
 
 #define FONT_HEIGHT 8
 

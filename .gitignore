@@ -3,4 +3,4 @@ obj/
 .vscode/
 src/gfx/*.c
 src/gfx/*.h
-src/gfx/*.log
+src/gfx/convpng.log

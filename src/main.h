@@ -38,9 +38,9 @@ typedef enum {
 
 typedef enum {
 	UPDATE_TEAM_COLORS = 0,
-	UPDATE_RESET_BUTTON,
 	UPDATE_CALCULATIONS,
-	UPDATE_AUTON
+	UPDATE_AUTON,
+	UPDATE_RESET_BUTTON
 } thingsToUpdate;
 
 typedef enum {
