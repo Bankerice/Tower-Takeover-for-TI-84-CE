@@ -218,14 +218,14 @@ extern uint8_t towerRemove_data[1371];
 #define towerRemove ((gfx_sprite_t*)towerRemove_data)
 #define sizeof_symbols_gfx_pal 512
 extern uint16_t symbols_gfx_pal[256];
-#define gray 255
-#define gold 254
-#define silver 253
-#define bronze 252
-#define BLUE 251
-#define RED 250
-#define PURPLE 249
-#define WHITE 248
-#define BLACK 247
+#define PAL_GRAY 255
+#define PAL_GOLD 254
+#define PAL_SILVER 253
+#define PAL_BRONZE 252
+#define PAL_BLUE 251
+#define PAL_RED 250
+#define PAL_PURPLE 249
+#define PAL_WHITE 248
+#define PAL_BLACK 247
 
 #endif
