@@ -136,7 +136,7 @@ void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 	else if (kb_Data[6] & kb_Div) 		enemyStack[2]    = enemyStack[2]     - inc < 0 ? 0 : enemyStack[2] - inc;
 	else return;
 
-	for (i = 0; i < 3, i++) { // If this action put the total number of cubes over 22, go back (easier atm than refactoring everything)
+	for (i = 0; i < 3; i++) { // If this action put the total number of cubes over 22, go back (easier atm than refactoring everything)
 		if (towers[i] + allianceStack[i] + enemyStack[i] > CUBE_LIMIT) {
 			memcpy(towers, oldTowers, 3 * sizeof(uint8_t));
 			memcpy(allianceStack, oldAllianceStack, 3 * sizeof(uint8_t));
