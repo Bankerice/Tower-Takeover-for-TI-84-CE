@@ -116,33 +116,70 @@ void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 		teamBlockTotal[i] = allianceStack[i] + enemyStack[i];
 	}
 
-		 if (kb_Data[1] & kb_2nd)		towers[0]        = towerTotal        + inc > TOWER_LIMIT ? TOWER_LIMIT - (towerTotal - towers[0]) : inc + towers[0];
-	else if (kb_Data[1] & kb_Mode)		towers[1]        = towerTotal        + inc > TOWER_LIMIT ? TOWER_LIMIT - (towerTotal - towers[1]) : inc + towers[1];
-	else if (kb_Data[1] & kb_Del) 		towers[2]        = towerTotal        + inc > TOWER_LIMIT ? TOWER_LIMIT - (towerTotal - towers[2]) : inc + towers[2];
-	else if (kb_Data[2] & kb_Alpha)		towers[0]        = towers[0]         - inc < 0 ? 0 : towers[0] - inc;
-	else if (kb_Data[3] & kb_GraphVar)	towers[1]        = towers[1]         - inc < 0 ? 0 : towers[1] - inc;
-	else if (kb_Data[4] & kb_Stat) 		towers[2]        = towers[2]         - inc < 0 ? 0 : towers[2] - inc;
-	else if (kb_Data[2] & kb_Math) 		allianceStack[0] = teamBlockTotal[0] + inc > CUBE_LIMIT ? CUBE_LIMIT - enemyStack[0] : inc + allianceStack[0];
-	else if (kb_Data[2] & kb_Recip) 	allianceStack[1] = teamBlockTotal[1] + inc > CUBE_LIMIT ? CUBE_LIMIT - enemyStack[1] : inc + allianceStack[1];
-	else if (kb_Data[2] & kb_Square) 	allianceStack[2] = teamBlockTotal[2] + inc > CUBE_LIMIT ? CUBE_LIMIT - enemyStack[2] : inc + allianceStack[2];
-	else if (kb_Data[3] & kb_Apps) 		allianceStack[0] = allianceStack[0]  - inc < 0 ? 0 : allianceStack[0] - inc;
-	else if (kb_Data[3] & kb_Sin) 		allianceStack[1] = allianceStack[1]  - inc < 0 ? 0 : allianceStack[1] - inc;
-	else if (kb_Data[3] & kb_Comma) 	allianceStack[2] = allianceStack[2]  - inc < 0 ? 0 : allianceStack[2] - inc;
-	else if (kb_Data[5] & kb_Vars) 		enemyStack[0]    = teamBlockTotal[0] + inc > CUBE_LIMIT ? CUBE_LIMIT - allianceStack[0] : inc + enemyStack[0];
-	else if (kb_Data[5] & kb_Tan) 		enemyStack[1]    = teamBlockTotal[1] + inc > CUBE_LIMIT ? CUBE_LIMIT - allianceStack[1] : inc + enemyStack[1];
-	else if (kb_Data[5] & kb_RParen) 	enemyStack[2]    = teamBlockTotal[2] + inc > CUBE_LIMIT ? CUBE_LIMIT - allianceStack[2] : inc + enemyStack[2];
-	else if (kb_Data[6] & kb_Clear) 	enemyStack[0]    = enemyStack[0]     - inc < 0 ? 0 : enemyStack[0] - inc;
-	else if (kb_Data[6] & kb_Power) 	enemyStack[1]    = enemyStack[1]     - inc < 0 ? 0 : enemyStack[1] - inc;
-	else if (kb_Data[6] & kb_Div) 		enemyStack[2]    = enemyStack[2]     - inc < 0 ? 0 : enemyStack[2] - inc;
-	else return;
-
-	for (i = 0; i < 3; i++) { // If this action put the total number of cubes over 22, go back (easier atm than refactoring everything)
-		if (towers[i] + allianceStack[i] + enemyStack[i] > CUBE_LIMIT) {
-			memcpy(towers, oldTowers, 3 * sizeof(uint8_t));
-			memcpy(allianceStack, oldAllianceStack, 3 * sizeof(uint8_t));
-			memcpy(enemyStack, oldEnemyStack, 3 * sizeof(uint8_t));
-		}
-	}
+	if (kb_Data[1] & kb_2nd) {
+		towers[0] += inc;
+		if (towers[0] + teamBlockTotal[0] > CUBE_LIMIT)
+			towers[0] = CUBE_LIMIT - teamBlockTotal[0];
+		if (towerTotal + inc > TOWER_LIMIT)
+			towers[0] = TOWER_LIMIT - (towerTotal - oldTowers[0]);
+	} else if (kb_Data[1] & kb_Mode) {
+		towers[1] += inc;
+		if (towers[1] + teamBlockTotal[1] > CUBE_LIMIT)
+			towers[1] = CUBE_LIMIT - teamBlockTotal[0];
+		if (towerTotal + inc > TOWER_LIMIT)
+			towers[1] = TOWER_LIMIT - (towerTotal - oldTowers[0]);
+	} else if (kb_Data[1] & kb_Del) {
+		towers[2] += inc;
+		if (towers[2] + teamBlockTotal[2] > CUBE_LIMIT)
+			towers[2] = CUBE_LIMIT - teamBlockTotal[0];
+		if (towerTotal + inc > TOWER_LIMIT)
+			towers[2] = TOWER_LIMIT - (towerTotal - oldTowers[0]);
+	} else if (kb_Data[2] & kb_Alpha)
+			   towers[0] = towers[0] - inc < 0 ?
+			   			0 : towers[0] - inc;
+	  else if (kb_Data[3] & kb_GraphVar)
+	  		   towers[1] = towers[1] - inc < 0 ?
+			     			0 : towers[1] - inc;
+	  else if (kb_Data[4] & kb_Stat)
+	  		   towers[2] = towers[2] - inc < 0 ?
+		  				   0 : towers[2] - inc;
+	  else if (kb_Data[2] & kb_Math)
+	  	allianceStack[0] = towers[0] + teamBlockTotal[0] + inc > CUBE_LIMIT ?
+		  				   CUBE_LIMIT - enemyStack[0] : inc + allianceStack[0];
+	  else if (kb_Data[2] & kb_Recip)
+	  	allianceStack[1] = towers[1] + teamBlockTotal[1] + inc > CUBE_LIMIT ?
+		   CUBE_LIMIT - enemyStack[1] : inc + allianceStack[1];
+	  else if (kb_Data[2] & kb_Square)
+	  	allianceStack[2] = towers[2] + teamBlockTotal[2] + inc > CUBE_LIMIT ?
+						   CUBE_LIMIT - enemyStack[2] : inc + allianceStack[2];
+	  else if (kb_Data[3] & kb_Apps)
+	  	allianceStack[0] = allianceStack[0] - inc < 0 ?
+		  				   0 : allianceStack[0] - inc;
+	  else if (kb_Data[3] & kb_Sin)
+	  	allianceStack[1] = allianceStack[1] - inc < 0 ?
+		  				   0 : allianceStack[1] - inc;
+	  else if (kb_Data[3] & kb_Comma)
+	  	allianceStack[2] = allianceStack[2] - inc < 0 ?
+		  				   0 : allianceStack[2] - inc;
+	  else if (kb_Data[5] & kb_Vars)
+	  	enemyStack[0] = towers[0] + teamBlockTotal[0] + inc >CUBE_LIMIT ?
+		  				CUBE_LIMIT - allianceStack[0] : inc + enemyStack[0];
+	  else if (kb_Data[5] & kb_Tan)
+	  	enemyStack[1] = towers[1] + teamBlockTotal[1] + inc > CUBE_LIMIT ?
+		  				CUBE_LIMIT - allianceStack[1] : inc + enemyStack[1];
+	  else if (kb_Data[5] & kb_RParen)
+	  	enemyStack[2] = towers[2] + teamBlockTotal[2] + inc > CUBE_LIMIT ?
+		  				CUBE_LIMIT - allianceStack[2] : inc + enemyStack[2];
+	  else if (kb_Data[6] & kb_Clear)
+	  	enemyStack[0] = enemyStack[0] - inc < 0 ?
+		  				0 : enemyStack[0] - inc;
+	  else if (kb_Data[6] & kb_Power)
+	  	enemyStack[1] = enemyStack[1] - inc < 0 ?
+		  				0 : enemyStack[1] - inc;
+	  else if (kb_Data[6] & kb_Div)
+	  	enemyStack[2] = enemyStack[2] - inc < 0 ?
+		  				0 : enemyStack[2] - inc;
+	  else return;
 
 	if (memcmp(towers, oldTowers, sizeof(towers)) ||
 		memcmp(allianceStack, oldAllianceStack, sizeof(allianceStack)) ||
