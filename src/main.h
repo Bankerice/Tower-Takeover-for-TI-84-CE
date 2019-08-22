@@ -12,6 +12,9 @@
 #include <string.h>
 #include <keypadc.h>
 
+#define TOWER_LIMIT 7
+#define CUBE_LIMIT 22
+
 
 typedef enum { // auton
 	AUTON_TIE = 0,
