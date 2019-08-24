@@ -348,7 +348,7 @@ void draw(auton autonWinner, teamColor col, uint8_t towers[], uint8_t allianceS[
 
 		memcpy(sortedDiffs, diffs, 10*sizeof(int8_t));
 
-		qsort(sortedDiffs, 10, sizeof(int8_t), compare);
+		selectionSort(sortedDiffs, 10);
 
 		for (i = 0; i < 3; i++) {
 			j = sortedDiffs[9-i];
