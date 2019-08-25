@@ -10,7 +10,7 @@
 #include "main.h"
 #include "graphics.h"
 
-int main() {
+int main(void) {
 	auton autonWinner = AUTON_TIE;
 	teamColor teamCol = TEAM_COLOR_RED;
 
@@ -18,8 +18,8 @@ int main() {
 			allianceS[3] = {0, 0, 0},
 			enemyS[3]    = {0, 0, 0};
 
-	uint8_t allianceScore = 0,
-			enemyScore = 0;
+	uint16_t allianceScore = 0,
+			 enemyScore = 0;
 
 	uint8_t future[2][3][3]; // ally/enemy | color | actions
 
@@ -38,13 +38,28 @@ int main() {
 	while (kb_Data[1] != kb_Graph) {
 		while (!kb_AnyKey()); //Stops for a key press
 
-		update(towers, allianceS, enemyS, &autonWinner, toUpdate, &teamCol);
+		if (update(towers, allianceS, enemyS, &autonWinner, toUpdate, &teamCol, future) == -1) {
+			autonWinner = AUTON_TIE;
+			teamCol = TEAM_COLOR_RED;
+			memset(towers, 0, 3 * sizeof(uint8_t));
+			memset(allianceS, 0, 3 * sizeof(uint8_t));
+			memset(enemyS, 0, 3 * sizeof(uint8_t));
+			memset(future, 0, 12 * sizeof(uint8_t));
+			allianceScore = 0;
+			enemyScore = 0;
+			toUpdate[UPDATE_CALCULATIONS] = true;
+			toUpdate[UPDATE_TEAM_COLORS] = true;
+			toUpdate[UPDATE_AUTON] = true;
+
+			initGUI();
+		};
 
 		if (toUpdate[UPDATE_CALCULATIONS]) {
 			allianceScore = calcScore(towers, allianceS, autonWinner, TEAM_ALLIANCE);
 			enemyScore = calcScore(towers, enemyS, autonWinner, TEAM_ENEMY);
 			calcFuture(future, towers, allianceS, enemyS, autonWinner);
 		}
+		
 		
 		draw(autonWinner, teamCol, towers, allianceS, enemyS,
 			 future, allianceScore, enemyScore, toUpdate);
@@ -56,8 +71,8 @@ int main() {
 }
 
 
-void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
-			auton* a, bool updates[], teamColor* col) {
+int8_t update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
+			auton* a, bool updates[], teamColor* col, uint8_t future[2][3][3]) {
 
 	uint8_t inc = 1;
 	uint8_t oldTowers[3], oldAllianceStack[3], oldEnemyStack[3];
@@ -65,7 +80,7 @@ void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 	uint16_t i;
 	char emptyBuffer[10];
 
-	memcpy(updates, 0, 4 * sizeof(bool));
+	memset(updates, 0, 4 * sizeof(bool));
 
 		 if (kb_Data[4] & kb_2)	inc = 2;
 	else if (kb_Data[5] & kb_3)	inc = 3;
@@ -85,15 +100,11 @@ void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 		updates[UPDATE_AUTON] = true;
 		*col = !*col;
 		while (kb_AnyKey());
-		return;
+		return 0;
 	}
 
-	if (kb_Data[1] & kb_Trace) {
-		updates[UPDATE_RESET_BUTTON] = true;
-		*a = AUTON_TIE;
-		*col = TEAM_COLOR_RED;
-		return;
-	}
+	if (kb_Data[1] & kb_Trace)
+		return -1;
 
 	for (i = 0; i < 3; i++) {
 		towerTotal += towers[i];
@@ -163,7 +174,7 @@ void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 	  else if (kb_Data[6] & kb_Div)
 	  	enemyStack[2] = (i = enemyStack[2] - inc) < 0 ?
 		  				 0 : i;
-	  else return;
+	  else return 0;
 
 	if (memcmp(towers, oldTowers, sizeof(towers)) ||
 		memcmp(allianceStack, oldAllianceStack, sizeof(allianceStack)) ||
@@ -191,6 +202,7 @@ void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 	// This is all the action keys, its gross but checking for non-number keys wasn't working for whatever reason
 	while (kb_Data[1] & 224 || kb_Data[2] & 240 || kb_Data[3] & 240 ||
 		   kb_Data[4] & 128 || kb_Data[5] & 112 || kb_Data[6] & 112);
+	return 0;
 }
 
 
@@ -222,7 +234,7 @@ void calcFuture(uint8_t future[2][3][3], uint8_t towers[3], uint8_t allianceStac
 			teamStacks[teamIter][colorIter]++;
 
 			future[teamIter][colorIter][CUBE_STACK] = 
-					calcScore(towers, teamIter == 1 ? enemyStack : teamStacks[teamIter],
+					calcScore(towers, (teamIter == 1 ? enemyStack : teamStacks[teamIter]),
 							  autonWinner, teamIter + 1);
 
 			teamStacks[teamIter][colorIter]--;
@@ -235,5 +247,5 @@ void calcFuture(uint8_t future[2][3][3], uint8_t towers[3], uint8_t allianceStac
 			future[teamIter][colorIter][TOWER_REMOVE] =
 					calcScore(tempTower, teamStacks[teamIter], autonWinner, teamIter+1);
 		}
-	}
+	 }
 }
