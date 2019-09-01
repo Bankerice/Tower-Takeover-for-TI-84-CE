@@ -92,9 +92,7 @@ void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 	else if (kb_Data[4] & kb_8)	inc = 8;
 	else if (kb_Data[5] & kb_9)	inc = 9;
 
-	if (inc != 1) {
-		while (!(kb_Data[1] & 224 || kb_Data[2] & 240 || kb_Data[3] & 240 || kb_Data[4] & 128 || kb_Data[5] & 112 || kb_Data[6] & 112));
-	}
+	while (inc != 1 && !(kb_Data[1] & 224 || kb_Data[2] & 240 || kb_Data[3] & 240 || kb_Data[4] & 128 || kb_Data[5] & 112 || kb_Data[6] & 112)) kb_Scan();
 
 
 
