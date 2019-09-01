@@ -8,7 +8,7 @@
 NAME        ?= TTCALC
 COMPRESSED  ?= NO
 ICON        ?= iconc.png
-DESCRIPTION ?= "Calculator for Tower Takeover by Vex Robotics"
+DESCRIPTION ?= "Calculator for Vex Robotics' Tower Takeover"
 
 # ----------------------------
 
