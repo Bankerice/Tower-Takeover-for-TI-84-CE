@@ -3,4 +3,5 @@ obj/
 .vscode/
 src/gfx/*.c
 src/gfx/*.h
+src/gfx/symbols_gfx.h
 src/gfx/convpng.log

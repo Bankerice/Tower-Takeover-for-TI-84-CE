@@ -16,13 +16,13 @@
 #define CUBE_LIMIT 22
 
 
-typedef enum { // auton
+typedef enum {
 	AUTON_TIE = 0,
 	AUTON_WIN,
 	AUTON_LOSS
 } auton;
 
-typedef enum { // auton
+typedef enum {
 	TEAM_ALLIANCE = 1,
 	TEAM_ENEMY
 } team;
@@ -52,7 +52,7 @@ typedef enum {
 } teamColor;
 
 void copy(uint8_t original[], uint8_t copy[], uint8_t indexes);
-void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[], auton* a, bool updates[], teamColor* col);
+int8_t update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[], auton* a, bool updates[], teamColor* col, uint8_t future[2][3][3]);
 uint8_t calcScore(uint8_t towers[], uint8_t stack[], auton a, team t);
 void calcFuture(uint8_t future[2][3][3], uint8_t towers[3], uint8_t allianceStack[3], uint8_t enemyStack[3], auton a);
 #endif
