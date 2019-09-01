@@ -1,12 +1,12 @@
 #include "utils.h"
 
-void swap(int8_t *xp, int8_t *yp) { 
-    int8_t temp = *xp; 
+void swap(struct recommendation_t  * xp, struct recommendation_t  * yp) { 
+    struct recommendation_t  temp = *xp; 
     *xp = *yp; 
-    *yp = temp; 
-} 
+    *yp = temp;
+}
 
-void selectionSort(int8_t arr[], uint8_t n) {
+void recommendationSort(RECCOMENDATIONS arr[], uint8_t n) {
     uint8_t i, j, min_idx;
 
     // One by one move boundary of unsorted subarray
@@ -14,24 +14,12 @@ void selectionSort(int8_t arr[], uint8_t n) {
         // Find the minimum element in unsorted array
         min_idx = i;
         for (j = i+1; j < n; j++)
-          if (arr[j] < arr[min_idx])
+          if (arr[j].delta < arr[min_idx].delta)
             min_idx = j;
 
          // Swap the found minimum element with the first element
         swap(&arr[min_idx], &arr[i]);
     }
-}
-
-int8_t indexOf(int8_t arr[], int8_t val, uint8_t indices) {
-	uint8_t i;
-	for (i = 0; i < sizeof(arr) / sizeof(int8_t); i++)
-		if (arr[i] == val)
-			return i;
-	return -1;
-}
-
-int compare (void * a, void * b) {
-    return (*(int *)a - *(int *)b);
 }
 
 void debugPrintPalette(void) {

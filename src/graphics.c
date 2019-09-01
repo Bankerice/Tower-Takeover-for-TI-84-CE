@@ -8,9 +8,9 @@
 */
 
 #include "graphics.h"
+#include "debug.h"
 
 #define FONT_HEIGHT 8
-
 
 void initGUI(void) {
 	/*
@@ -53,9 +53,7 @@ void initGUI(void) {
 	gfx_VertLine_NoClip(133, 2, 220);
 	gfx_VertLine_NoClip(134, 2, 220);
 
-	// Top boxes, team and delta box
-	gfx_TransparentSprite_NoClip(neutralTeamBox, 41, 2);
-	gfx_TransparentSprite_NoClip(neutralTeamBox, 88, 2);
+	// Delta box
 	spriteCentered(deltaTextBox, 135, 2, 162, 13, deltaTextBox_width, deltaTextBox_height);
 
 	// Draw the first 6 normal orange/green/purple boxes
@@ -103,11 +101,6 @@ void initGUI(void) {
 	printStringCentered("Enemy", 88, 2, 132,  13, FONT_HEIGHT);
 	gfx_TransparentSprite_NoClip(deltaXText, 141, 4);
 
-	// Fill in the +/- 0's
-	for (iter = 0; iter < 10; iter++) {
-		spriteCentered(plusMinusZero, 135, 94 + iter * 13, 162, 104 + iter * 13,
-					   plusMinusZero_width, plusMinusZero_height);
-	}
 
 	// Draw the symbols on the side of the grid
 	gfx_TransparentSprite_NoClip(genericCube, 2, 16);
@@ -119,42 +112,27 @@ void initGUI(void) {
 	// Draw the bottom panels
 	for (iter = 0; iter < 5; iter++)
 		gfx_TransparentSprite_NoClip(bottomPanel, 64 * iter, 224);
-	gfx_TransparentSprite_NoClip(genericTeamColor, 12, 227);
 	printStringCentered("Reset", 194, 226, 253, 237, FONT_HEIGHT);
 	gfx_PrintStringXY("Quit", 275, 228);
-
 	gfx_SetColor(PALLETE_BLACK);
-	// Draw Alliance Auton Box (Blue)
-	gfx_Rectangle_NoClip(168, 2, 14, 15);
-	gfx_Rectangle_NoClip(169, 3, 12, 13);
-	gfx_TransparentSprite_NoClip(genericAuton, 170, 4);
-	gfx_TransparentSprite_NoClip(autonA,	   172, 6);
-	// Draw Enemy Auton Box (Red)
-	gfx_Rectangle_NoClip(183, 2, 14, 15);
-	gfx_Rectangle_NoClip(184, 3, 12, 13);
-	gfx_TransparentSprite_NoClip(genericAuton, 185, 4);
-	gfx_TransparentSprite_NoClip(autonE,	   187, 6);
-	// Draw ie Auton Box (Green)
-	gfx_Rectangle_NoClip(176, 18, 14, 15);
-	gfx_Rectangle_NoClip(177, 19, 12, 13);
-	gfx_TransparentSprite_NoClip(greenAuton, 178, 20);
-	gfx_TransparentSprite_NoClip(autonT,	 180, 22);
+	gfx_FillRectangle_NoClip(13,228, 51-13, 236-228);
 
-	// Draw the framing and +/-0 for the best action boxes
+	// Draw the framing for the best action boxes
 	for (iter = 0; iter < 3; iter++) {
 		gfx_Rectangle_NoClip(175 + 47 * iter, 92, 41, 54);
 		gfx_Rectangle_NoClip(176 + 47 * iter, 93, 39, 52);
 		gfx_HorizLine_NoClip(177 + 47 * iter, 131, 37);
 		gfx_HorizLine_NoClip(177 + 47 * iter, 132, 37);
-		gfx_TransparentSprite_NoClip(recommendationScore, 177 + 47 * iter, 133);
-		gfx_TransparentSprite_NoClip(plusMinusZero, 184 + 47 * iter, 135);
 	}
 
 	// Best action box rectangles
-	gfx_SetColor( PALLETE_GOLD );   gfx_FillRectangle_NoClip(177, 94, 37, 37);
+	gfx_SetColor(PALLETE_GOLD  );   gfx_FillRectangle_NoClip(177, 94, 37, 37);
 	gfx_SetColor(PALLETE_SILVER);   gfx_FillRectangle_NoClip(224, 94, 37, 37);
 	gfx_SetColor(PALLETE_BRONZE);   gfx_FillRectangle_NoClip(271, 94, 37, 37);
 
+
+	gfx_TransparentSprite_NoClip(greenAuton,178,20);
+	gfx_SetColor(PALLETE_BLACK);
 }
 
 void printStringCentered(const char * str, const uint16_t x1, const uint16_t y1, 
@@ -195,6 +173,13 @@ void spriteCentered(gfx_sprite_t * sprite, const uint16_t x1, const uint16_t y1,
 								         y1 + ((2 + y2 - y1) - spriteHeight) / 2); // Y calcs
 }
 
+void printIntCentered(const int num, const uint16_t x1, const uint16_t y1, 
+					  const uint16_t x2, const uint16_t y2, const uint16_t fontHeight) {
+		char buffer[10];
+		sprintf(buffer, "%d", num);
+		printStringCentered(buffer, x1, y1, x2, y2, fontHeight);
+	}
+
 void draw(auton autonWinner, teamColor col, uint8_t towers[], uint8_t allianceS[],
 		  uint8_t enemyS[], uint8_t future[2][3][3], uint16_t allianceScore,
 		  uint16_t enemyScore, bool updates[]) {
@@ -204,7 +189,8 @@ void draw(auton autonWinner, teamColor col, uint8_t towers[], uint8_t allianceS[
 	
 	bool validPrints[2][3][3];
 	int8_t futureDeltas[9];
-	int8_t diffs[10], sortedDiffs[10];
+	int8_t diffs[10];
+	struct recommendation_t sortedDiffs[10];
 	uint8_t interval, x, y;
 	uint8_t delta;
 
@@ -237,13 +223,11 @@ void draw(auton autonWinner, teamColor col, uint8_t towers[], uint8_t allianceS[
 		printStringCentered("Ally", 41, 2, 85, 13, FONT_HEIGHT);
 		printStringCentered("Enemy", 88, 2, 132, 13, FONT_HEIGHT);
 
-		gfx_TransparentSprite_NoClip(autonA, 172, 6);
-		gfx_TransparentSprite_NoClip(autonE, 187, 6);
 	}
 
 	/* Handles redrawing all the scores, futures, deltas, and recommendation boxes
 	 * for the entire program. Redraws all the empty boxes first to cover up the old
-	 * scores, then fills in the numbers, leaving dashes instead of numbers for all
+	 * scores, then fills in the numbers	, leaving dashes instead of numbers for all
 	 * actions where completing them would either exceed the tower or cube limit or
 	 * it would have less than 0 of something (this is valid() and validPrints[2][3][3]).
 	 * Also covers up the old recommendation boxes then finds the best actions to take 
@@ -285,6 +269,10 @@ void draw(auton autonWinner, teamColor col, uint8_t towers[], uint8_t allianceS[
 			gfx_TransparentSprite_NoClip(purpleTextBox,       88, 94 + interval);
 			gfx_TransparentSprite_NoClip(shortPurpleTextBox, 135, 94 + interval);
 		}
+		gfx_TransparentSprite_NoClip(redTextBox, 41, 94);
+		gfx_TransparentSprite_NoClip(redTextBox, 88, 94);
+		gfx_TransparentSprite_NoClip(shortRedTextBox, 135, 94);
+
 
 		// Draw text boxes for the recommended action score deltas
 		for (i = 0; i < 3; i++)
@@ -293,32 +281,24 @@ void draw(auton autonWinner, teamColor col, uint8_t towers[], uint8_t allianceS[
 		// Draw stacked cube counters
 		for (i = 0; i < 3; i++) {
 			interval = i * 13;
-			sprintf(buffer, "%u", allianceS[i]);
-			printStringCentered(buffer, 41, 16 + interval, 85, 26 + interval, FONT_HEIGHT); 
-			memset(buffer, 0, 10 * sizeof(uint8_t));
+			printIntCentered(allianceS[i], 41, 16 + interval, 85, 26 + interval, FONT_HEIGHT);
 		}
 		for (i = 0; i < 3; i++) {
 			interval = i * 13;
-			sprintf(buffer, "%u", enemyS[i]);
-			printStringCentered(buffer, 88, 16 + interval, 132, 26 + interval, FONT_HEIGHT); 
-			memset(buffer, 0, 10 * sizeof(uint8_t));
+			printIntCentered(enemyS[i], 88, 16 + interval, 132, 26 + interval, FONT_HEIGHT);
 		}
 
 		// Draw the tower cube counters
 		for (i = 0; i < 3; i++) {
 			interval = i * 13;
-			sprintf(buffer, "%u", towers[i]);
-			printStringCentered(buffer, 41, 55 + interval, 132, 65 + interval, FONT_HEIGHT); 
-			memset(buffer, 0, 10 * sizeof(uint8_t));
+			printIntCentered(towers[i], 41, 55 + interval, 132, 65 + interval, FONT_HEIGHT);
 		}
 
 		// Draw the current score text
-		sprintf(buffer, "%u", allianceScore);
-		printStringCentered(buffer, 41, 94, 41 + redTextBox_width, 94 + redTextBox_height, FONT_HEIGHT); 
-		memset(buffer, 0, 10 * sizeof(uint8_t));
-		sprintf(buffer, "%u", enemyScore);
-		printStringCentered(buffer, 88, 94, 88 + redTextBox_width, 94 + redTextBox_height, FONT_HEIGHT); 
-		memset(buffer, 0, 10 * sizeof(uint8_t));
+		printIntCentered(allianceScore, 41, 94, 41 + redTextBox_width,
+						 94 + redTextBox_height, FONT_HEIGHT);
+		printIntCentered(enemyScore, 88, 94, 88 + redTextBox_width,
+						 94 + redTextBox_height, FONT_HEIGHT);
 
 		// Draw the recommended action boxes
 		gfx_SetColor( PALLETE_GOLD );   gfx_FillRectangle_NoClip(177, 94, 37, 37);
@@ -345,14 +325,14 @@ void draw(auton autonWinner, teamColor col, uint8_t towers[], uint8_t allianceS[
 
 		// Assigns all the deltas to the place in the diffs array
 		diffs[0] = allianceScore - enemyScore;
-		for (colorIter = 0; colorIter < 3; colorIter++) {
+		for (colorIter = 0; colorIter < 3; colorIter++)
 			for (actionIter = 0; actionIter < 3; actionIter++) {
 				diffs[actionIter + (3 * colorIter) + 1] =
 						  future[TEAM_ALLIANCE - 1][actionIter][colorIter]
 						- future[TEAM_ENEMY    - 1][actionIter][colorIter]
 						- diffs[0];
 			}
-		}
+		
 
 		// Draws the deltas
 		for (i = 0; i < 10; i++) {
@@ -384,7 +364,7 @@ void draw(auton autonWinner, teamColor col, uint8_t towers[], uint8_t allianceS[
 
 			memset(buffer, 0, 10*sizeof(uint8_t));
 		} 
-
+		
 		/* Finding and drawing the recommendation actions:
 		 * First, creates a new array called sortedDiffs that is diffs but the actions
 		 * that are impossible because of cube/tower limits are set to -127 and it's
@@ -398,22 +378,29 @@ void draw(auton autonWinner, teamColor col, uint8_t towers[], uint8_t allianceS[
 		 *       based on the the delta, using the other value to avoid having to use the
 		 *       inefficient indexOf, instead using it to reference the sprite.
 		 */
-
-		memcpy(sortedDiffs, diffs, 10 * sizeof(int8_t));
-
+		
 		// Sets the values for sortedDiffs where the action is invalid
 		// to -127 so it won't be a recommended action when sorting
-		for (i = 0; i < 9; i++)
-			sortedDiffs[i+1] = validPrints[0][i%3][i/3] ? sortedDiffs[i+1] : -127;
+		for (i = 0; i < 9; i++){
+			sortedDiffs[i + 1].delta = validPrints[0][i % 3][i / 3] ? diffs[i + 1] : -127;
+			sortedDiffs[i + 1].spriteId = i + 1;
+		}
 
 		// Score delta can't be considered as a valid action
-		sortedDiffs[0] = -127;
+		sortedDiffs[0].delta = -127;
 
-		selectionSort(sortedDiffs, 10);
+		recommendationSort(sortedDiffs, 10);
+
+		for(i = 9; i >= 1; i--) {
+			dbg_sprintf(dbgout, "%i%c", sortedDiffs[i].spriteId, ' ');
+		}
+		dbg_sprintf(dbgout, "\n");
+
+
 
 		// Finds and draws the recommended actions
 		for (i = 0; i < 3; i++) {
-			delta = sortedDiffs[9-i];
+			delta = sortedDiffs[9-i].delta;
 			interval = 47 * i;
 
 			// Loading the buffer with a +/- or dashes for an invalid action and the delta
@@ -429,11 +416,11 @@ void draw(auton autonWinner, teamColor col, uint8_t towers[], uint8_t allianceS[
 			}
 
 			printStringCentered(buffer, 177 + interval, 135, 213 + interval, 141, FONT_HEIGHT);
-			memset(buffer, 0, 10 * sizeof(uint8_t)); 
 
+
+			memset(buffer, 0, 10 * sizeof(uint8_t)); 
 			if(delta != -127) {
-				x = indexOf(diffs, delta, 10);
-				switch (x) {
+				switch (sortedDiffs[9-i].spriteId) {
 					case 1:
 						gfx_TransparentSprite_NoClip(orangeCube,  177 + interval, 94);
 						break;
@@ -467,16 +454,11 @@ void draw(auton autonWinner, teamColor col, uint8_t towers[], uint8_t allianceS[
 						gfx_TransparentSprite_NoClip(towerRemove, 177 + interval, 94);
 						gfx_TransparentSprite_NoClip(towerPurple, 177 + interval, 94);
 						break;
-					case -1:
-						gfx_PrintStringXY("DEBUG", 200, 220);
-						break;
-					default: 
-						sprintf(buffer, "%i", x);
-						gfx_PrintStringXY(buffer, 200, 200);
-						memset(buffer, 0, sizeof(uint8_t) * 10);
+					default:
 						break;
 				}
 			}
+
 		}
 	}
 

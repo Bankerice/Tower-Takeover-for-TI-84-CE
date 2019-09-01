@@ -8,7 +8,6 @@
 */
 
 #include "main.h"
-#include "graphics.h"
 
 int main(void) {
 	auton autonWinner = AUTON_TIE;
@@ -23,7 +22,7 @@ int main(void) {
 
 	uint8_t future[2][3][3]; // ally/enemy | color | actions
 
-	bool toUpdate[4] = {true, true, true, false}; // All true but reset for initial draw
+	bool toUpdate[4] = {true, true, true, true}; // All true but reset for initial draw
 
 	kb_SetMode(MODE_3_CONTINUOUS);
 	
@@ -36,9 +35,11 @@ int main(void) {
 		 future, allianceScore, enemyScore, toUpdate);
 
 	while (kb_Data[1] != kb_Graph) {
+		while (kb_AnyKey());
 		while (!kb_AnyKey()); //Stops for a key press
 
-		if (update(towers, allianceS, enemyS, &autonWinner, toUpdate, &teamCol, future) == -1) {
+		update(towers, allianceS, enemyS, &autonWinner, toUpdate, &teamCol, future);
+		if (toUpdate[UPDATE_RESET_BUTTON]) {
 			autonWinner = AUTON_TIE;
 			teamCol = TEAM_COLOR_RED;
 			memset(towers, 0, 3 * sizeof(uint8_t));
@@ -50,7 +51,6 @@ int main(void) {
 			toUpdate[UPDATE_CALCULATIONS] = true;
 			toUpdate[UPDATE_TEAM_COLORS] = true;
 			toUpdate[UPDATE_AUTON] = true;
-
 			initGUI();
 		};
 
@@ -63,6 +63,7 @@ int main(void) {
 		
 		draw(autonWinner, teamCol, towers, allianceS, enemyS,
 			 future, allianceScore, enemyScore, toUpdate);
+
 	}
 
 	gfx_End();
@@ -71,7 +72,7 @@ int main(void) {
 }
 
 
-int8_t update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
+void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 			auton* a, bool updates[], teamColor* col, uint8_t future[2][3][3]) {
 
 	uint8_t inc = 1;
@@ -91,6 +92,12 @@ int8_t update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 	else if (kb_Data[4] & kb_8)	inc = 8;
 	else if (kb_Data[5] & kb_9)	inc = 9;
 
+	if (inc != 1) {
+		while (!(kb_Data[1] & 224 || kb_Data[2] & 240 || kb_Data[3] & 240 || kb_Data[4] & 128 || kb_Data[5] & 112 || kb_Data[6] & 112));
+	}
+
+
+
 	memcpy(oldTowers,		 towers, 		3 * sizeof(uint8_t));
 	memcpy(oldAllianceStack, allianceStack, 3 * sizeof(uint8_t));
 	memcpy(oldEnemyStack,	 enemyStack, 	3 * sizeof(uint8_t));
@@ -99,12 +106,13 @@ int8_t update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 		updates[UPDATE_TEAM_COLORS] = true;
 		updates[UPDATE_AUTON] = true;
 		*col = !*col;
-		while (kb_AnyKey());
-		return 0;
+		return;
 	}
 
-	if (kb_Data[1] & kb_Trace)
-		return -1;
+	if (kb_Data[1] & kb_Trace){
+		updates[UPDATE_RESET_BUTTON] = true;
+		return;
+	}
 
 	for (i = 0; i < 3; i++) {
 		towerTotal += towers[i];
@@ -113,48 +121,51 @@ int8_t update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 
 	if (kb_Data[1] & kb_2nd) {
 		towers[0] += inc;
-		if (towers[0] + teamBlockTotal[0] > CUBE_LIMIT)
+		if (towers[0] + teamBlockTotal[0] + inc > CUBE_LIMIT)
 			towers[0] = CUBE_LIMIT - teamBlockTotal[0];
 		if (towerTotal + inc > TOWER_LIMIT)
 			towers[0] = TOWER_LIMIT - (towerTotal - oldTowers[0]);
 	} else if (kb_Data[1] & kb_Mode) {
 		towers[1] += inc;
-		if (towers[1] + teamBlockTotal[1] > CUBE_LIMIT)
+		if (towers[1] + teamBlockTotal[1] + inc > CUBE_LIMIT)
 			towers[1] = CUBE_LIMIT - teamBlockTotal[0];
 		if (towerTotal + inc > TOWER_LIMIT)
-			towers[1] = TOWER_LIMIT - (towerTotal - oldTowers[0]);
+			towers[1] = TOWER_LIMIT - (towerTotal - oldTowers[1]);
 	} else if (kb_Data[1] & kb_Del) {
 		towers[2] += inc;
-		if (towers[2] + teamBlockTotal[2] > CUBE_LIMIT)
+		if (towers[2] + teamBlockTotal[2] + inc > CUBE_LIMIT)
 			towers[2] = CUBE_LIMIT - teamBlockTotal[0];
 		if (towerTotal + inc > TOWER_LIMIT)
-			towers[2] = TOWER_LIMIT - (towerTotal - oldTowers[0]);
+			towers[2] = TOWER_LIMIT - (towerTotal - oldTowers[2]);
+
+
+
 	} else if (kb_Data[2] & kb_Alpha)
-			   towers[0] = (i = towers[0] - inc) < 0 ?
+			   towers[0] = (int8_t)(i = towers[0] - inc) < 0 ?
 			   				0 : i;
 	  else if (kb_Data[3] & kb_GraphVar)
-	  		   towers[1] = (i = towers[1] - inc) < 0 ?
+	  		   towers[1] = (int8_t)(i = towers[1] - inc) < 0 ?
 			     			0 : i;
 	  else if (kb_Data[4] & kb_Stat)
-	  		   towers[2] = (i = towers[2] - inc) < 0 ?
+	  		   towers[2] = (int8_t)(i = towers[2] - inc) < 0 ?
 		  					0 : i;
 	  else if (kb_Data[2] & kb_Math)
 	  	allianceStack[0] = towers[0] + teamBlockTotal[0] + inc > CUBE_LIMIT ?
-		  				   CUBE_LIMIT - enemyStack[0] : inc + allianceStack[0];
+		  				   CUBE_LIMIT - enemyStack[0]  - towers[0] : inc + allianceStack[0];
 	  else if (kb_Data[2] & kb_Recip)
 	  	allianceStack[1] = towers[1] + teamBlockTotal[1] + inc > CUBE_LIMIT ?
-						   CUBE_LIMIT - enemyStack[1] : inc + allianceStack[1];
+						   CUBE_LIMIT - enemyStack[1] - towers[1] : inc + allianceStack[1];
 	  else if (kb_Data[2] & kb_Square)
 	  	allianceStack[2] = towers[2] + teamBlockTotal[2] + inc > CUBE_LIMIT ?
-						   CUBE_LIMIT - enemyStack[2] : inc + allianceStack[2];
+						   CUBE_LIMIT - enemyStack[2] - towers[2] : inc + allianceStack[2];
 	  else if (kb_Data[3] & kb_Apps)
-	  	allianceStack[0] = (i = allianceStack[0] - inc) < 0 ?
+	  	allianceStack[0] = (int8_t)(i = allianceStack[0] - inc) < 0 ?
 		  					0 : i;
 	  else if (kb_Data[3] & kb_Sin)
-	  	allianceStack[1] = (i = allianceStack[1] - inc) < 0 ?
+	  	allianceStack[1] = (int8_t)(i = allianceStack[1] - inc) < 0 ?
 		  					0 : i;
 	  else if (kb_Data[3] & kb_Comma)
-	  	allianceStack[2] = (i = allianceStack[2] - inc) < 0 ?
+	  	allianceStack[2] = (int8_t)(i = allianceStack[2] - inc) < 0 ?
 		  					0 : i;
 	  else if (kb_Data[5] & kb_Vars)
 	  	enemyStack[0] = towers[0] + teamBlockTotal[0] + inc >CUBE_LIMIT ?
@@ -166,15 +177,14 @@ int8_t update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 	  	enemyStack[2] = towers[2] + teamBlockTotal[2] + inc > CUBE_LIMIT ?
 		  				CUBE_LIMIT - allianceStack[2] : inc + enemyStack[2];
 	  else if (kb_Data[6] & kb_Clear)
-	  	enemyStack[0] = (i = enemyStack[0] - inc) < 0 ?
+	  	enemyStack[0] = (int8_t)(i = enemyStack[0] - inc) < 0 ?
 		  				 0 : i;
 	  else if (kb_Data[6] & kb_Power)
-	  	enemyStack[1] = (i = enemyStack[1] - inc) < 0 ?
+	  	enemyStack[1] = (int8_t)(i = enemyStack[1] - inc) < 0 ?
 		  				 0 : i;
 	  else if (kb_Data[6] & kb_Div)
-	  	enemyStack[2] = (i = enemyStack[2] - inc) < 0 ?
+	  	enemyStack[2] = (int8_t)(i = enemyStack[2] - inc) < 0 ?
 		  				 0 : i;
-	  else return 0;
 
 	if (memcmp(towers, oldTowers, sizeof(towers)) ||
 		memcmp(allianceStack, oldAllianceStack, sizeof(allianceStack)) ||
@@ -198,11 +208,6 @@ int8_t update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 			updates[UPDATE_CALCULATIONS] = true;
 			break;
 	}
-
-	// This is all the action keys, its gross but checking for non-number keys wasn't working for whatever reason
-	while (kb_Data[1] & 224 || kb_Data[2] & 240 || kb_Data[3] & 240 ||
-		   kb_Data[4] & 128 || kb_Data[5] & 112 || kb_Data[6] & 112);
-	return 0;
 }
 
 
