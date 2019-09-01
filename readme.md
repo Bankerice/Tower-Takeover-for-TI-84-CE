@@ -1,14 +1,7 @@
-### Template
+### Calculator for Vex Robotics' Tower Takeover
 
-You can clone this directory for your own projects.
-
-To add code, fill in the void main() function in main.c. You can also create
-your own .c and .h files and add them to the directory; the Makefile included in
-this template will automatically find and compile the new .c files.
-
-In addition, you can also add your own .asm files, which will be detected and
-added appropriately to the proper segment.
+Inspired by [Walshbot's Tower Takeover Scoring Calculator](https://docs.google.com/spreadsheets/d/1Y6cIgPTXV6TxAmUUEhi0BIb9Mq3QNr47fIzttS-Qa0M/edit#gid=1549206126), Team 2616-N made their own version on the TI-84 CE with improved input, features, and graphics for use in Vex Robotics' Tower Takeover. 
 
 ---
 
-This template is a part of the C SDK Toolchain for use on the CE.
+This project is built off of [Mateoconlechuga's toolchain](https://github.com/CE-Programming/toolchain) to build C programs for TI-84 CE / TI-83 Premium CE calculators.
