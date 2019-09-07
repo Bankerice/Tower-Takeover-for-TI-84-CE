@@ -8,6 +8,7 @@
 */
 
 #include "main.h"
+#include "graphics.h"
 
 int main(void) {
 	auton autonWinner = AUTON_TIE;
@@ -35,10 +36,18 @@ int main(void) {
 		 future, allianceScore, enemyScore, toUpdate);
 
 	while (kb_Data[1] != kb_Graph) {
-		while (kb_AnyKey());
-		while (!kb_AnyKey()); //Stops for a key press
+		/* While a key is held down that's not a number key 
+		 * 
+		 * You need it to keep looping while the number key is held down because otherwise
+		 * you have to release and re-press the number key between action keys, and while that's
+		 * not a huge deal, it's not expected behavior, and this can mitigate that issue.
+		 */
+		while (kb_AnyKey() && !(kb_Data[3] & 112 || kb_Data[4] & 112 || kb_Data[5] & 112));
+		// While no keys are pressed 
+		while (!kb_AnyKey());
 
 		update(towers, allianceS, enemyS, &autonWinner, toUpdate, &teamCol, future);
+
 		if (toUpdate[UPDATE_RESET_BUTTON]) {
 			autonWinner = AUTON_TIE;
 			teamCol = TEAM_COLOR_RED;
@@ -59,7 +68,6 @@ int main(void) {
 			enemyScore = calcScore(towers, enemyS, autonWinner, TEAM_ENEMY);
 			calcFuture(future, towers, allianceS, enemyS, autonWinner);
 		}
-		
 		
 		draw(autonWinner, teamCol, towers, allianceS, enemyS,
 			 future, allianceScore, enemyScore, toUpdate);
@@ -92,9 +100,16 @@ void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 	else if (kb_Data[4] & kb_8)	inc = 8;
 	else if (kb_Data[5] & kb_9)	inc = 9;
 
-	while (inc != 1 && !(kb_Data[1] & 224 || kb_Data[2] & 240 || kb_Data[3] & 240 || kb_Data[4] & 128 || kb_Data[5] & 112 || kb_Data[6] & 112)) kb_Scan();
-
-
+	/* While a number key is held down and an action key isn't pressed
+	 *
+	 * It is nescessary to use this over using kb_AnyKey() in place of the number keys
+	 * because with kb_AnyKey() pressing a number once would enter you in a state of not
+	 * being able to do anything until you press an action key, and this fixes that.
+	 */  
+	while (  (kb_Data[3] & 112 || kb_Data[4] & 112 || kb_Data[5] & 112)
+										 &&
+		 	!(kb_Data[1] & 224 || kb_Data[2] & 240 || kb_Data[3] & 240 ||
+			  kb_Data[4] & 128 || kb_Data[5] & 112 || kb_Data[6] & 112) ) kb_Scan();
 
 	memcpy(oldTowers,		 towers, 		3 * sizeof(uint8_t));
 	memcpy(oldAllianceStack, allianceStack, 3 * sizeof(uint8_t));
@@ -117,71 +132,68 @@ void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 		teamBlockTotal[i] = allianceStack[i] + enemyStack[i];
 	}
 
-	if (kb_Data[1] & kb_2nd) {
-		towers[0] += inc;
+	if (kb_Data[1] & kb_2nd) { 			// Orange Tower
+		towers[CUBE_ORANGE] += inc;
 		if (towers[0] + teamBlockTotal[0] + inc > CUBE_LIMIT)
-			towers[0] = CUBE_LIMIT - teamBlockTotal[0];
+			towers[CUBE_ORANGE] = CUBE_LIMIT - teamBlockTotal[0];
 		if (towerTotal + inc > TOWER_LIMIT)
-			towers[0] = TOWER_LIMIT - (towerTotal - oldTowers[0]);
-	} else if (kb_Data[1] & kb_Mode) {
-		towers[1] += inc;
-		if (towers[1] + teamBlockTotal[1] + inc > CUBE_LIMIT)
-			towers[1] = CUBE_LIMIT - teamBlockTotal[0];
+			towers[CUBE_ORANGE] = TOWER_LIMIT - (towerTotal - oldTowers[0]);
+	} else if (kb_Data[1] & kb_Mode) { 	// Green Tower
+		towers[CUBE_GREEN] += inc;
+		if (towers[CUBE_GREEN] + teamBlockTotal[1] + inc > CUBE_LIMIT)
+			towers[CUBE_GREEN] = CUBE_LIMIT - teamBlockTotal[1];
 		if (towerTotal + inc > TOWER_LIMIT)
-			towers[1] = TOWER_LIMIT - (towerTotal - oldTowers[1]);
-	} else if (kb_Data[1] & kb_Del) {
-		towers[2] += inc;
+			towers[CUBE_GREEN] = TOWER_LIMIT - (towerTotal - oldTowers[1]);
+	} else if (kb_Data[1] & kb_Del) {	// Purple Tower
+		towers[CUBE_PURPLE] += inc;
 		if (towers[2] + teamBlockTotal[2] + inc > CUBE_LIMIT)
-			towers[2] = CUBE_LIMIT - teamBlockTotal[0];
+			towers[CUBE_PURPLE] = CUBE_LIMIT - teamBlockTotal[2];
 		if (towerTotal + inc > TOWER_LIMIT)
-			towers[2] = TOWER_LIMIT - (towerTotal - oldTowers[2]);
-
-
-
-	} else if (kb_Data[2] & kb_Alpha)
-			   towers[0] = (int8_t)(i = towers[0] - inc) < 0 ?
+			towers[CUBE_PURPLE] = TOWER_LIMIT - (towerTotal - oldTowers[2]);
+	} else if (kb_Data[2] & kb_Alpha) 	// Orange Detower
+			   towers[CUBE_ORANGE] = (int8_t)(i = towers[0] - inc) < 0 ?
 			   				0 : i;
-	  else if (kb_Data[3] & kb_GraphVar)
-	  		   towers[1] = (int8_t)(i = towers[1] - inc) < 0 ?
+	  else if (kb_Data[3] & kb_GraphVar) 	// Green Detower
+	  		   towers[CUBE_GREEN] = (int8_t)(i = towers[1] - inc) < 0 ?
 			     			0 : i;
-	  else if (kb_Data[4] & kb_Stat)
-	  		   towers[2] = (int8_t)(i = towers[2] - inc) < 0 ?
+	  else if (kb_Data[4] & kb_Stat) 	// Purple Detower
+	  		   towers[CUBE_PURPLE] = (int8_t)(i = towers[2] - inc) < 0 ?
 		  					0 : i;
-	  else if (kb_Data[2] & kb_Math)
-	  	allianceStack[0] = towers[0] + teamBlockTotal[0] + inc > CUBE_LIMIT ?
-		  				   CUBE_LIMIT - enemyStack[0]  - towers[0] : inc + allianceStack[0];
-	  else if (kb_Data[2] & kb_Recip)
-	  	allianceStack[1] = towers[1] + teamBlockTotal[1] + inc > CUBE_LIMIT ?
+	  else if (kb_Data[2] & kb_Math) 	// Orange Alliance Stack
+	  	allianceStack[CUBE_ORANGE] = towers[0] + teamBlockTotal[0] + inc > CUBE_LIMIT ?
+		  				   CUBE_LIMIT - enemyStack[0] - towers[0] : inc + allianceStack[0];
+	  else if (kb_Data[2] & kb_Recip) 	// Green Alliance Stack
+	  	allianceStack[CUBE_GREEN] = towers[1] + teamBlockTotal[1] + inc > CUBE_LIMIT ?
 						   CUBE_LIMIT - enemyStack[1] - towers[1] : inc + allianceStack[1];
-	  else if (kb_Data[2] & kb_Square)
-	  	allianceStack[2] = towers[2] + teamBlockTotal[2] + inc > CUBE_LIMIT ?
+	  else if (kb_Data[2] & kb_Square) 	// Purple Alliance Stack
+	  	allianceStack[CUBE_PURPLE] = towers[2] + teamBlockTotal[2] + inc > CUBE_LIMIT ?
 						   CUBE_LIMIT - enemyStack[2] - towers[2] : inc + allianceStack[2];
-	  else if (kb_Data[3] & kb_Apps)
-	  	allianceStack[0] = (int8_t)(i = allianceStack[0] - inc) < 0 ?
+	  else if (kb_Data[3] & kb_Apps) 	// Orange Alliance Destack
+	  	allianceStack[CUBE_ORANGE] = (int8_t)(i = allianceStack[0] - inc) < 0 ?
 		  					0 : i;
-	  else if (kb_Data[3] & kb_Sin)
-	  	allianceStack[1] = (int8_t)(i = allianceStack[1] - inc) < 0 ?
+	  else if (kb_Data[3] & kb_Sin) 	// Green Alliance Destack
+	  	allianceStack[CUBE_GREEN] = (int8_t)(i = allianceStack[1] - inc) < 0 ?
 		  					0 : i;
-	  else if (kb_Data[3] & kb_Comma)
-	  	allianceStack[2] = (int8_t)(i = allianceStack[2] - inc) < 0 ?
+	  else if (kb_Data[3] & kb_Comma) 	// Purple Alliance Destack
+	  	allianceStack[CUBE_PURPLE] = (int8_t)(i = allianceStack[2] - inc) < 0 ?
 		  					0 : i;
-	  else if (kb_Data[5] & kb_Vars)
-	  	enemyStack[0] = towers[0] + teamBlockTotal[0] + inc >CUBE_LIMIT ?
+	  else if (kb_Data[5] & kb_Vars) 	// Orange Enemy Stack
+	  	enemyStack[CUBE_ORANGE] = towers[0] + teamBlockTotal[0] + inc >CUBE_LIMIT ?
 		  				CUBE_LIMIT - allianceStack[0] : inc + enemyStack[0];
-	  else if (kb_Data[5] & kb_Tan)
-	  	enemyStack[1] = towers[1] + teamBlockTotal[1] + inc > CUBE_LIMIT ?
+	  else if (kb_Data[5] & kb_Tan) 	// Green Enemy Stack
+	  	enemyStack[CUBE_GREEN] = towers[1] + teamBlockTotal[1] + inc > CUBE_LIMIT ?
 		  				CUBE_LIMIT - allianceStack[1] : inc + enemyStack[1];
-	  else if (kb_Data[5] & kb_RParen)
-	  	enemyStack[2] = towers[2] + teamBlockTotal[2] + inc > CUBE_LIMIT ?
+	  else if (kb_Data[5] & kb_RParen) 	// Purple Enemy Stack
+	  	enemyStack[CUBE_PURPLE] = towers[2] + teamBlockTotal[2] + inc > CUBE_LIMIT ?
 		  				CUBE_LIMIT - allianceStack[2] : inc + enemyStack[2];
-	  else if (kb_Data[6] & kb_Clear)
-	  	enemyStack[0] = (int8_t)(i = enemyStack[0] - inc) < 0 ?
+	  else if (kb_Data[6] & kb_Clear) 	// Orange Enemy Destack
+	  	enemyStack[CUBE_ORANGE] = (int8_t)(i = enemyStack[0] - inc) < 0 ?
 		  				 0 : i;
-	  else if (kb_Data[6] & kb_Power)
-	  	enemyStack[1] = (int8_t)(i = enemyStack[1] - inc) < 0 ?
+	  else if (kb_Data[6] & kb_Power) 	// Green Enemy Destack
+	  	enemyStack[CUBE_GREEN] = (int8_t)(i = enemyStack[1] - inc) < 0 ?
 		  				 0 : i;
-	  else if (kb_Data[6] & kb_Div)
-	  	enemyStack[2] = (int8_t)(i = enemyStack[2] - inc) < 0 ?
+	  else if (kb_Data[6] & kb_Div) 	// Purple Enemy Destack
+	  	enemyStack[CUBE_PURPLE] = (int8_t)(i = enemyStack[2] - inc) < 0 ?
 		  				 0 : i;
 
 	if (memcmp(towers, oldTowers, sizeof(towers)) ||
@@ -216,6 +228,7 @@ uint8_t calcScore(uint8_t towers[], uint8_t stack[], auton autonWinner, team tea
 	for (i = 0; i < 3; i++)
 		count += (towers[i] + 1) * stack[i];
 
+	// Add the autonomous bonus
 	count += autonWinner == teamToCalc ? 6 : autonWinner == AUTON_TIE ? 3 : 0;
 	return count;
 }

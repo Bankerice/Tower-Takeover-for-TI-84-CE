@@ -363,26 +363,25 @@ void draw(auton autonWinner, teamColor col, uint8_t towers[], uint8_t allianceS[
 								102 + (13 * i), FONT_HEIGHT);
 
 			memset(buffer, 0, 10*sizeof(uint8_t));
-		} 
+		}
 		
 		/* Finding and drawing the recommendation actions:
-		 * First, creates a new array called sortedDiffs that is diffs but the actions
+		 * First, creates a new array called sortedDiffs that contains the deltas but the actions
 		 * that are impossible because of cube/tower limits are set to -127 and it's
-		 * sorted from lowest to highest point delta.  Then it goes through the top three,
+		 * sorted from lowest to highest point delta.  Then it goes through the top three
 		 * and draws the sprite and the delta in the box unless the delta is -127 in which
 		 * case there aren't 3 moves you can do, so it only fills in as many boxes as there
 		 * are available moves.
-		 * 
-		 * TODO: Refactor so that that sortedDiffs is using a struct containing both the delta
-		 *       and a number or something representing the color and action, and sorting it
-		 *       based on the the delta, using the other value to avoid having to use the
-		 *       inefficient indexOf, instead using it to reference the sprite.
 		 */
 		
-		// Sets the values for sortedDiffs where the action is invalid
-		// to -127 so it won't be a recommended action when sorting
 		for (i = 0; i < 9; i++){
-			sortedDiffs[i + 1].delta = validPrints[0][i % 3][i / 3] ? diffs[i + 1] : -127;
+			 /* validPrints is a bool array containing if the action is possible, if it's not 
+			  * it gets set to -127, the minimum value for int8_t. The indices validPrints are
+			  * 0 to always use your alliance, i % 3 for the color to go 012012012, and 
+			  * floor(i / 3) for the action to go 000111222, which corresponds with how diffs
+			  * is organized.
+			  */
+			sortedDiffs[i + 1].delta = validPrints[0][i % 3][(int)(floor(i / 3))] ? diffs[i + 1] : -127;
 			sortedDiffs[i + 1].spriteId = i + 1;
 		}
 
@@ -391,19 +390,14 @@ void draw(auton autonWinner, teamColor col, uint8_t towers[], uint8_t allianceS[
 
 		recommendationSort(sortedDiffs, 10);
 
-		for(i = 9; i >= 1; i--) {
-			dbg_sprintf(dbgout, "%i%c", sortedDiffs[i].spriteId, ' ');
-		}
-		dbg_sprintf(dbgout, "\n");
-
-
-
 		// Finds and draws the recommended actions
 		for (i = 0; i < 3; i++) {
+			// The current delta, 
 			delta = sortedDiffs[9-i].delta;
 			interval = 47 * i;
 
-			// Loading the buffer with a +/- or dashes for an invalid action and the delta
+			// Loading the buffer with a +/- and the delta or 
+			// dashes for an invalid action
 			if (delta > 0)
 				sprintf(buffer, "%c%i", '+', abs(delta));
 			else if (delta == 0)
@@ -415,6 +409,7 @@ void draw(auton autonWinner, teamColor col, uint8_t towers[], uint8_t allianceS[
 					sprintf(buffer, "%c%i", '-', abs(delta));
 			}
 
+			// Prints the current delta in the text box under the recommendation box
 			printStringCentered(buffer, 177 + interval, 135, 213 + interval, 141, FONT_HEIGHT);
 
 

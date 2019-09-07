@@ -12,7 +12,6 @@
 #include <string.h>
 #include <keypadc.h>
 
-#include "graphics.h"
 
 #define TOWER_LIMIT 7
 #define CUBE_LIMIT 22

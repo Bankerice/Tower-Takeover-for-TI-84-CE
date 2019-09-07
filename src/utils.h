@@ -2,6 +2,7 @@
 #define H_UTILS
 
 #include "main.h"
+#include "graphics.h"
 #include "graphx.h"
 
 void swap(struct recommendation_t  * xp, struct recommendation_t  * yp);
