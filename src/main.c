@@ -9,6 +9,7 @@
 
 #include "main.h"
 #include "graphics.h"
+#include "debug.h"
 
 int main(void) {
 	auton autonWinner = AUTON_TIE;
@@ -42,7 +43,7 @@ int main(void) {
 		 * you have to release and re-press the number key between action keys, and while that's
 		 * not a huge deal, it's not expected behavior, and this can mitigate that issue.
 		 */
-		while (kb_AnyKey() && !(kb_Data[3] & 112 || kb_Data[4] & 112 || kb_Data[5] & 112));
+		while (kb_AnyKey());
 		// While no keys are pressed 
 		while (!kb_AnyKey());
 
@@ -89,27 +90,22 @@ void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 	uint16_t i;
 	char emptyBuffer[10];
 
+	bool gap = false;
+
 	memset(updates, 0, 4 * sizeof(bool));
 
-		 if (kb_Data[4] & kb_2)	inc = 2;
-	else if (kb_Data[5] & kb_3)	inc = 3;
-	else if (kb_Data[3] & kb_4)	inc = 4;
-	else if (kb_Data[4] & kb_5)	inc = 5;
-	else if (kb_Data[5] & kb_6)	inc = 6;
-	else if (kb_Data[3] & kb_7)	inc = 7;
-	else if (kb_Data[4] & kb_8)	inc = 8;
-	else if (kb_Data[5] & kb_9)	inc = 9;
+	inc = getInputNumber();
 
-	/* While a number key is held down and an action key isn't pressed
-	 *
-	 * It is nescessary to use this over using kb_AnyKey() in place of the number keys
-	 * because with kb_AnyKey() pressing a number once would enter you in a state of not
-	 * being able to do anything until you press an action key, and this fixes that.
-	 */  
-	while (  (kb_Data[3] & 112 || kb_Data[4] & 112 || kb_Data[5] & 112)
-										 &&
-		 	!(kb_Data[1] & 224 || kb_Data[2] & 240 || kb_Data[3] & 240 ||
-			  kb_Data[4] & 128 || kb_Data[5] & 112 || kb_Data[6] & 112) ) kb_Scan();
+  		if (inc != 1) 
+    		while (!(kb_ScanGroup(1) || kb_ScanGroup(2) || kb_ScanGroup(6) || kb_ScanGroup(7) || (kb_Data[3] & 240) || (kb_Data[4] & 240) || (kb_Data[5] & 240))) {
+      		kb_Scan();
+      		if (i = (getInputNumber()) == 1) {
+        		while(kb_AnyKey()) kb_Scan();
+        		while(!kb_AnyKey()) kb_Scan();
+        		if(inc != i && i != 1)
+          		inc = i;
+      		}
+    	}
 
 	memcpy(oldTowers,		 towers, 		3 * sizeof(uint8_t));
 	memcpy(oldAllianceStack, allianceStack, 3 * sizeof(uint8_t));
