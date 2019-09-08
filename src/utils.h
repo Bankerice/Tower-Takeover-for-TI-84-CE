@@ -10,5 +10,6 @@ void recommendationSort(struct recommendation_t arr[], uint8_t n);
 int compare(void * a, void * b);
 int8_t indexOf(int8_t arr[], int8_t val, uint8_t indices);
 void debugPrintPalette(void);
+uint8_t getInputNumber(void);
 
 #endif
