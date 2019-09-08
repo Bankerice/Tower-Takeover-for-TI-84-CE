@@ -42,9 +42,11 @@ int main(void) {
 		 * you have to release and re-press the number key between action keys, and while that's
 		 * not a huge deal, it's not expected behavior, and this can mitigate that issue.
 		 */
-		while (kb_AnyKey() && !(kb_Data[3] & 112 || kb_Data[4] & 112 || kb_Data[5] & 112));
-		// While no keys are pressed 
-		while (!kb_AnyKey());
+		while (kb_AnyKey());
+
+		while (!kb_AnyKey() || (kb_Data[3] & 112 || kb_Data[4] & 112 || kb_Data[5] & 112))
+			kb_Scan();
+		// While a key is pressed A
 
 		update(towers, allianceS, enemyS, &autonWinner, toUpdate, &teamCol, future);
 
@@ -179,13 +181,13 @@ void update(uint8_t towers[], uint8_t allianceStack[], uint8_t enemyStack[],
 		  					0 : i;
 	  else if (kb_Data[5] & kb_Vars) 	// Orange Enemy Stack
 	  	enemyStack[CUBE_ORANGE] = towers[0] + teamBlockTotal[0] + inc >CUBE_LIMIT ?
-		  				CUBE_LIMIT - allianceStack[0] : inc + enemyStack[0];
+		  				CUBE_LIMIT - allianceStack[0] - towers[0] : inc + enemyStack[0];
 	  else if (kb_Data[5] & kb_Tan) 	// Green Enemy Stack
 	  	enemyStack[CUBE_GREEN] = towers[1] + teamBlockTotal[1] + inc > CUBE_LIMIT ?
-		  				CUBE_LIMIT - allianceStack[1] : inc + enemyStack[1];
+		  				CUBE_LIMIT - allianceStack[1] - towers[1] : inc + enemyStack[1];
 	  else if (kb_Data[5] & kb_RParen) 	// Purple Enemy Stack
 	  	enemyStack[CUBE_PURPLE] = towers[2] + teamBlockTotal[2] + inc > CUBE_LIMIT ?
-		  				CUBE_LIMIT - allianceStack[2] : inc + enemyStack[2];
+		  				CUBE_LIMIT - allianceStack[2] - towers[2] : inc + enemyStack[2];
 	  else if (kb_Data[6] & kb_Clear) 	// Orange Enemy Destack
 	  	enemyStack[CUBE_ORANGE] = (int8_t)(i = enemyStack[0] - inc) < 0 ?
 		  				 0 : i;
