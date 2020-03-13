@@ -512,7 +512,7 @@ void valid(bool validPrints[2][3][3], uint8_t towers[], uint8_t allianceS[], uin
 						!(towers[0] + towers[1] + towers[2] >= 7);
 
 			validPrints[teamIter][colorIter][TOWER_REMOVE] =
-						!(towers[colorIter] < 0);
+						!(towers[colorIter] <= 0);
 		}
 	}
 }
